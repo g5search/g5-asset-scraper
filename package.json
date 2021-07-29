@@ -3,7 +3,19 @@
   "version": "1.0.1",
   "description": "",
   "main": "index.js",
+  "config": {
+    "imageRepo": "gcr.io/g5-images/asset-scraper",
+    "imageName": "asset-scraper"
+  },
   "scripts": {
+    "docker:build": "docker build -t $npm_package_config_imageName .",
+    "docker:run": "docker run -p 8085:8085 $npm_package_config_imageName",
+    "docker:tag:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$branch",
+    "docker:tag:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$branch",
+    "docker:tag:prod": " docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$npm_package_version",
+    "docker:push:prod": "docker push $npm_package_config_imageRepo:$npm_package_version",
+    "docker:push:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch-$sha",
+    "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch-$sha-prime",
     "dev": "nodemon ./index.js",
     "test": "jest"
   },

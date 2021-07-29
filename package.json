@@ -14,8 +14,8 @@
     "docker:tag:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$branch",
     "docker:tag:prod": " docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$npm_package_version",
     "docker:push:prod": "docker push $npm_package_config_imageRepo:$npm_package_version",
-    "docker:push:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch-$sha",
-    "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch-$sha-prime",
+    "docker:push:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
+    "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
     "dev": "nodemon ./index.js",
     "test": "jest"
   },

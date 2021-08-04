@@ -1,12 +1,12 @@
 const socialMap = {
-    yelp: /(?:https?:)?\/\/(?:[A-z]+\.)?yelp.com\/biz\/([A-z0-9-]+)\/?/gm,
-    facebook: /(?:http:\/\/)?(?:www\.)?facebook\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-]*)/gm,
-    twitter: /(?:https?:)?\/\/(?:[A-z]+\.)?twitter.com\/([A-z0-9-]+)\/?/gm,
-    pinterest: /(?:https?:)?\/\/(?:[A-z]+\.)?pinterest.com\/([A-z0-9-]+)\/?/gm,
-    instagram: /(?:https?:)?\/\/(?:[A-z]+\.)?instagram.com\/([A-z0-9-]+)\/?/gm,
-    youtube: /(?:https?:)?\/\/(?:[A-z]+\.)?youtube.com\/user\/([A-z0-9-]+)\/?/gm,
-    linkedin: /(?:https?:)?\/\/(?:[A-z]+\.)?linkedin.com\/(in|company)\/([A-z0-9-]+)\/?/gm,
-    tumblr: /(?:https?:)?\/\/(?:[A-z]+\.)?tumblr.com\/?/gm
+    yelp_username: /(?:https?:)?\/\/(?:[A-z]+\.)?yelp.com\/biz\/([A-z0-9-]+)\/?/gm,
+    facebook_username: /(?:https?:\/\/)?(?:www\.)?facebook\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-]*)/gm,
+    twitter_username: /(?:https?:)?\/\/(?:[A-z]+\.)?twitter.com\/([A-z0-9-]+)\/?/gm,
+    pinterest_username: /(?:https?:)?\/\/(?:[A-z]+\.)?pinterest.com\/([A-z0-9-]+)\/?/gm,
+    instagram_username: /(?:https?:)?\/\/(?:[A-z]+\.)?instagram.com\/([A-z0-9-]+)\/?/gm,
+    youtube_username: /(?:https?:)?\/\/(?:[A-z]+\.)?youtube.com\/user\/([A-z0-9-]+)\/?/gm,
+    linkedin_username: /(?:https?:)?\/\/(?:[A-z]+\.)?linkedin.com\/(in|company)\/([A-z0-9-]+)\/?/gm,
+    tumblr_username: /(?:https?:)?\/\/(?:[A-z]+\.)?tumblr.com\/?/gm
 }
 
 module.exports = {
@@ -23,7 +23,7 @@ function init (Scraper) {
 }
 
 function getSocialLinks(scraper) {
-  if (scraper.template.social.selector) {
+  if (scraper.template.social && scraper.template.social.selector) {
     const html = scraper.$(scraper.template.social.selector).html()
     compareLinks(html, scraper)
   } else {

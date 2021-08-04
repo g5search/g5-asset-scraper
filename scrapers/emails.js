@@ -10,15 +10,16 @@ function init (Scraper) {
 }
 
 function getEmails(scraper) {
+  if (!scraper.emails.email) scraper.emails.email = {}
   const emails = scraper.$(scraper.template.email.selector ? scraper.template.email.selector : 'body').html()
   const matched = emails.match(scraper.emailRegex)
   if (matched) {
     matched.forEach((e) => {
       const email = e.toLowerCase()
       if (!scraper.emails[email]) {
-        scraper.emails[email] = { count: 0 }
+        scraper.emails.email[email] = { count: 0 }
       }
-      scraper.emails[email].count++
+      scraper.emails.email[email].count++
     })
   }
 }

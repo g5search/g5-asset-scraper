@@ -24,7 +24,9 @@ class Scraper {
     this.returKeys = []
     this.template = params.template
     this.complete = false
+    this.amenitiesConfig = params.amenitiesConfig
     this.config = params.config
+    this.amenitiesTags = 'p, li, span, option, form, button, input, header, .btn'
     this.errors = {}
   }
 
@@ -121,7 +123,7 @@ class Scraper {
   }
 
   validate (params) {
-    console.log(params, params.rootdomain)
+    if (!params.amenitiesConfig || typeof params.amenitiesConfig !== 'object') throw new Error ('missing amenities config')
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')

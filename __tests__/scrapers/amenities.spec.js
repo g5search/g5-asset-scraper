@@ -1,10 +1,12 @@
 const scrapers = require('../../scrapers')
+const amenitiesConfig = require('../config/amenitites-config')
 
 describe('amenities Scraper' , () => {
 
   let Scraper
   beforeEach(() => {
     Scraper = {
+      amenitiesConfig,
       amenities: {},
       $: cheerio.load(`<div class="html-content">
       <h2>Apartment Features:</h2>
@@ -45,7 +47,16 @@ describe('amenities Scraper' , () => {
       }
   })
   const cheerio = require('cheerio')
-  const { init, getAmenities } = require('../../scrapers/amenities')
+  const {
+    init,
+    getAmenities,
+    setAmenitiesFromConfig,
+    getAmenitiesFromTemplate,
+    amenityAlreadyFound,
+    getCopy,
+    buildRegexPattern,
+    keywordMatch
+  } = require('../../scrapers/amenities')
   test('AddScraper Called with function', () => {
     init(Scraper)
     expect(Scraper.addScraper).toHaveBeenCalledWith('afterPageChange', getAmenities)
@@ -81,6 +92,54 @@ describe('amenities Scraper' , () => {
   test('Scrape Amenities Without Template', () => {
     Scraper.template = null
     getAmenities(Scraper)
-    expect(Scraper.amenities).toEqual({})
+    expect(Scraper.amenities).toHaveProperty('apartment_amenities')
+    expect(Scraper.amenities).toHaveProperty('community_amenities')
+    expect(typeof Scraper.amenities.apartment_amenities).toEqual('object')
+    expect(typeof Scraper.amenities.community_amenities).toEqual('object')
+  })
+
+  // test amenityAlreadyFound function  
+  test('Amenity Already Found', () => {
+    Scraper.amenities = {
+      apartment_amenities: {
+        'New/Renovated Interior': {}
+      },
+      community_amenities: {
+        'Spacious Floor Plans': {}
+      }
+    }
+    const result = amenityAlreadyFound('New/Renovated Interior', Scraper.amenities.apartment_amenities)
+    expect(result).toEqual(true)
+  } )
+  test('Amenity Not Found', () => {
+    Scraper.amenities = {
+      apartment_amenities: {},
+      community_amenities: {
+        'Spacious Floor Plans': true
+      }
+    }
+    const result = amenityAlreadyFound('New/Renovated Interior', Scraper.amenities.apartment_amenities)
+    expect(result).toEqual(false)
+  } )
+
+  test ('Get copy', () => {
+    const result = getCopy(Scraper.$, 'h2')
+    expect(result).toEqual('Apartment Features: ')
+  })
+  test ('Get copy with no result', () => {
+    const result = getCopy(Scraper.$, 'h1')
+    expect(result).toEqual('')
+  })
+
+  test ('buildRegex pattern with array', () => {
+    const result = buildRegexPattern(['hello', 'world'])
+    expect(result instanceof RegExp).toEqual(true)
+    expect(result).toEqual(/(?:^|\b)hellos?(?:$|\b)|(?:^|\b)worlds?(?:$|\b)/gi)
+  })
+
+  test ('buildRegex pattern with string', () => {
+    expect(() => {
+      buildRegexPattern('hello')
+    }).toThrow('keywords must be an array')
   })
 })

@@ -9,14 +9,15 @@ function init(Scraper) {
 }
 
 function scrapePhoneNumbers(scraper) {
+  if (!scraper.phoneNumbers.display_phone_number) scraper.phoneNumbers.display_phone_number = {}
   const phones = scraper.$(scraper.template.phone.selector ? scraper.template.phone.selector : 'body').text()
   const matched = phones.match(scraper.phoneRegex)
   if (matched) {
     matched.forEach((p) => {
-      if (!scraper.phoneNumbers[p]) {
-        scraper.phoneNumbers[p] = { count: 0 }
+      if (!scraper.phoneNumbers.display_phone_number[p]) {
+        scraper.phoneNumbers.display_phone_number[p] = { count: 0 }
       }
-      scraper.phoneNumbers[p].count++
+      scraper.phoneNumbers.display_phone_number[p].count++
     })
   }
 }

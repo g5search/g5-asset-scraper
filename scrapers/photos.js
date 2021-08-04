@@ -1,4 +1,4 @@
-const asyncPool = require('tiny-async-pool')
+const PromisePool = require('@supercharge/promise-pool')
 const cloudinary = require('../cloudinary')
 
 const concurrency = 10
@@ -20,16 +20,19 @@ async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
   const uploads = []
   for (let i = 0; i < imageUrls.length; i++) {
-    try {
-      const imageUrl = imageUrls[i]
-      const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
-      uploads.push({ url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } })
-    } catch (error) {
-      console.log(error)
-    }
+    const imageUrl = imageUrls[i]
+    const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
+    uploads.push({ url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } })
   }
 
-  return asyncPool(concurrency, uploads, cloudinary.upload)
+  const { results, errors } = await PromisePool
+  .for(uploads)
+  .process(async data => {
+    return cloudinary.upload(data)
+  })
+  scraper.errors = { ...scraper.errors, imageUpload: errors }
+  return results
+  // return asyncPool(concurrency, uploads, tryCatchUpload)
 }
 
 function scrapePhotos (scraper) {
@@ -50,7 +53,8 @@ function formatImageUrl (url, rootProtocol, rootdomain) {
     url = url.split('url(')[1]
   }
   if (url.includes(')')) {
-    url = url.split(')')[0]
+    const splitUrl = url.split(/.(jpg|gif|png|jpeg)/gm)
+    url = `${splitUrl[0]}.${splitUrl[1]}`
   }
   const protocol = /^(http|https)/.test(url)
   if (protocol) {

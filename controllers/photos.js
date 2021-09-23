@@ -1,13 +1,13 @@
 const axios = require('axios')
-const blockhash = require("blockhash-core")
-const { imageFromBuffer, getImageData } = require("@canvas/image")
+const blockhash = require('blockhash-core')
+const { imageFromBuffer, getImageData } = require('@canvas/image')
 
 module.exports = {
   getUniqueImageUrls,
   compareImages
 }
 /**
- * Deduplucates images and returns array of objects
+ * Deduplicates images and returns array of objects
  * containing image url and size
  * @param {Array} images - array of image urls
  * @returns {Array} - returns an array of objects 
@@ -45,16 +45,18 @@ async function _generateRefMap(images) {
   const refMap = new Map();
   for (let i = 0; i < images.length; i++) {
     const imgObj = await _readImageFromUrl(images[i])
-    const { height, width } = imgObj
-    const imgHash = await _hash(imgObj)
-    let value
-    if (refMap.has(imgHash)) {
-      const existingPath = refMap.get(imgHash)
-      value = existingPath.height > height ? existingPath : { url: images[i], height, width }
-    } else {
-      value= { url: images[i], height, width }
+    if (imgObj) {
+      const { height, width } = imgObj
+      const imgHash = await _hash(imgObj)
+      let value
+      if (refMap.has(imgHash)) {
+        const existingPath = refMap.get(imgHash)
+        value = existingPath.height > height ? existingPath : { url: images[i], height, width }
+      } else {
+        value= { url: images[i], height, width }
+      }
+      refMap.set(imgHash, value)
     }
-    refMap.set(imgHash, value)
   }
   return refMap
 }
@@ -81,10 +83,15 @@ async function _hash(imageObj) {
  * @returns {Buffer} - image buffer
  */
 async function _readImageFromUrl(url) {
-  const response = await axios.get(url, {
-    responseType: "arraybuffer"
-  })
-  return imageFromBuffer(response.data)
+  try {
+    const response = await axios.get(url, {
+      responseType: "arraybuffer"
+    })
+    return imageFromBuffer(response.data)
+  } catch (error) {
+    console.log(error)
+    return null
+  }
 }
 
 

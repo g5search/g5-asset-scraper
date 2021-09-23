@@ -4,6 +4,10 @@ const app = express()
 app.use(express.json({ limit: '1000kb' }))
 const Scraper = require('./scraper')
 
+app.get('/', (req, res) => {
+  res.send('Yes, I am listening.')
+})
+
 app.post('/', async (req, res) => {
   const { body } = req
   try {

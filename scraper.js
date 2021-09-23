@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
 
 /**
- * Scrapes websites for assets (address, imeages, amentiies, emails)
+ * Scrapes websites for assets (address, images, amenities, emails)
  * @class Scraper
  */
 class Scraper {
@@ -45,7 +45,7 @@ class Scraper {
   }
 
   // propName always string, value doesnt need to be typechecked, boolean
-  addProp(propName, value, returnProp = false) {
+  addProp (propName, value, returnProp = false) {
     if (typeof propName !== 'string' || typeof returnProp !== 'boolean') {
       throw new Error('bad params: addProp function')
     }
@@ -53,7 +53,7 @@ class Scraper {
     if (returnProp) this.returKeys.push(propName)
   }
 
-  async runBeforeScrape() {
+  async runBeforeScrape () {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
       await this.beforeScrape[i](this)
     }

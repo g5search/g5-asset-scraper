@@ -30,7 +30,7 @@ const _dedupeByFileName = async (images) => {
   for(let i = 0; i < imageObjects.length; i++) {
     const imgObj = imageObjects[i]
     if (imgObj) {
-      const imgKey = imgObj.url.split('/').pop()
+      const imgKey = imgObj.url.split('/').pop().replace(' ', '%20')
       const imageVal = getMapVal(imageMap, imgKey, imgObj)
       imageMap.set(imgKey, imageVal)
     }

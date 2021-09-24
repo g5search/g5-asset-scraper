@@ -18,16 +18,17 @@ function init (Scraper) {
 
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
+    .map(url => formatImageUrl(url))
   const uniqueUrls = await getUniqueImageUrls(imageUrls)
   const uploads = uniqueUrls.map((imageUrl) => {
     const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
     return { url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } }
   })
   const { results, errors } = await PromisePool
-  .for(uploads)
-  .process(async data => {
-    return cloudinary.upload(data)
-  })
+    .for(uploads)
+    .process(async data => {
+      return cloudinary.upload(data)
+    })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results
   // return asyncPool(concurrency, uploads, tryCatchUpload)
@@ -66,3 +67,4 @@ function formatImageUrl (url, rootProtocol, rootdomain) {
   }
   return `${rootProtocol}://${rootdomain}/${cleanPath}`
 }
+

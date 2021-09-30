@@ -1,6 +1,6 @@
 const PromisePool = require('@supercharge/promise-pool')
 const cloudinary = require('../cloudinary')
-
+const { getUniqueImageUrls } = require('../controllers/photos')
 const concurrency = 10
 
 module.exports = {
@@ -18,18 +18,17 @@ function init (Scraper) {
 
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
-  const uploads = []
-  for (let i = 0; i < imageUrls.length; i++) {
-    const imageUrl = imageUrls[i]
+    .map(url => formatImageUrl(url))
+  const uniqueUrls = await getUniqueImageUrls(imageUrls)
+  const uploads = uniqueUrls.map((imageUrl) => {
     const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
-    uploads.push({ url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } })
-  }
-
-  const { results, errors } = await PromisePool
-  .for(uploads)
-  .process(async data => {
-    return cloudinary.upload(data)
+    return { url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } }
   })
+  const { results, errors } = await PromisePool
+    .for(uploads)
+    .process(async data => {
+      return cloudinary.upload(data)
+    })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results
   // return asyncPool(concurrency, uploads, tryCatchUpload)
@@ -68,3 +67,4 @@ function formatImageUrl (url, rootProtocol, rootdomain) {
   }
   return `${rootProtocol}://${rootdomain}/${cleanPath}`
 }
+

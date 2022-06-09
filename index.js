@@ -6,14 +6,16 @@ const Scraper = require('./scraper')
 
 app.post('/', async (req, res) => {
   const { body } = req
+  if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(body))
   try {
     const scraper = new Scraper(body)
     await scraper.run()
     const results = scraper.results()
+    if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
     res.json(results)
   } catch (error) {
     console.log(error)
-    res.status(422).send(error.message)
+    res.send(error.message)
   }
 })
 

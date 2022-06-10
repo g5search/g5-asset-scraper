@@ -23,6 +23,7 @@ async function upload({ url, attribs }) {
   return new Promise((res, rej) => {
     cloudinary.uploader.upload(url, attribs, function (err, response) {
       if (!err) {
+        if (process.env.ENABLE_LOGGING) console.log({ msg: 'CLOUDINARY RESPONSE', response })
         res(response)
       } else {
         rej(err)

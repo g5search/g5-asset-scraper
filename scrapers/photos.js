@@ -1,7 +1,7 @@
 const PromisePool = require('@supercharge/promise-pool')
 const cloudinary = require('../cloudinary')
 const { getUniqueImageUrls } = require('../controllers/photos')
-const concurrency = 10
+// const concurrency = 10
 
 module.exports = {
   init,
@@ -20,6 +20,7 @@ async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
     .map(url => formatImageUrl(url))
   const uniqueUrls = await getUniqueImageUrls(imageUrls)
+  if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
   const uploads = uniqueUrls.map((imageUrl) => {
     const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
     return { url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } }
@@ -38,6 +39,7 @@ function scrapePhotos (scraper) {
   const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
     .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
   ]
+  if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
   const pageUrl = scraper.url
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {

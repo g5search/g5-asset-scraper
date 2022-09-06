@@ -36,9 +36,14 @@ async function uploadPhotos (scraper) {
 }
 
 function scrapePhotos (scraper) {
-  const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
-  ]
+  const urls = (typeof scraper.page === 'object' && scraper.page !== null)
+    ? [...new Set(scraper.page.content.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
+      .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
+    ]
+    : [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
+      .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
+    ]
+
   if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
   const pageUrl = scraper.url
   urls.forEach((url) => {

@@ -1,7 +1,8 @@
 const PromisePool = require('@supercharge/promise-pool')
 const cloudinary = require('../cloudinary')
 const { getUniqueImageUrls } = require('../controllers/photos')
-// const concurrency = 10
+
+const IMAGE_REGEX = /([^="'])+\.(jpg|gif|png|jpeg)/gm
 
 module.exports = {
   init,
@@ -10,12 +11,21 @@ module.exports = {
   formatImageUrl
 }  
 
+/**
+ * Imports lifecycle hooks.
+ * @param {Object} Scraper 
+ */
 function init (Scraper) {
   Scraper.addProp('imageUrls', {}, true)
   Scraper.addScraper('afterPageChange', scrapePhotos)
   Scraper.addScraper('afterScrape', uploadPhotos)
 }
 
+/**
+ * Adds tags, destination to Image, and uploads to Cloudinary (image host).
+ * @param {Object} scraper 
+ * @returns
+ */
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
     .map(url => formatImageUrl(url))
@@ -32,20 +42,19 @@ async function uploadPhotos (scraper) {
     })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results
-  // return asyncPool(concurrency, uploads, tryCatchUpload)
 }
 
+/**
+ * Orchestrating function to find, format, and collect image URLs.
+ * @param {Object} scraper 
+ */
 function scrapePhotos (scraper) {
-  const urls = (typeof scraper.page === 'object' && scraper.page !== null)
-    ? [...new Set(scraper.page.content.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-      .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
-    ]
-    : [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-      .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
-    ]
+  const urls = findUniqueImageUrls(scraper)
 
   if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
+  
   const pageUrl = scraper.url
+  
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {
       scraper.imageUrls[url] = []
@@ -54,6 +63,35 @@ function scrapePhotos (scraper) {
   })
 }
 
+/**
+ * Detects if the scraper had issues parsing the page. Return false if parsed completely.
+ * @param {Object} scraper 
+ * @returns
+ */
+function isValidPage (scraper) {
+  return typeof scraper.page === 'object' && scraper.page !== null
+}
+
+/**
+ * Collects image-like URLs, dedups the list, and normalizes them.
+ * @param {Object} scraper 
+ * @returns
+ */
+function findUniqueImageUrls (scraper) {
+  const urls = isValidPage(scraper) ? scraper.page.content.match(IMAGE_REGEX) : scraper.page.match(IMAGE_REGEX)
+
+  const uniqueUrls = [...new Set(urls)]
+  
+  return uniqueUrls.map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain))
+}
+
+/**
+ * Normalizes URLs including relative URL paths to absolute.
+ * @param {String} url 
+ * @param {String} rootProtocol 
+ * @param {String} rootdomain 
+ * @returns
+ */
 function formatImageUrl (url, rootProtocol, rootdomain) {
   if (url.includes('url(')) {
     url = url.split('url(')[1]

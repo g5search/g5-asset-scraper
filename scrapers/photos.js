@@ -19,6 +19,7 @@ function init (Scraper) {
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
     .map(url => formatImageUrl(url))
+  if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE IMAGE DEDUPE', count: imageUrls.length })
   const uniqueUrls = await getUniqueImageUrls(imageUrls)
   if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
   const uploads = uniqueUrls.map((imageUrl) => {
@@ -32,13 +33,10 @@ async function uploadPhotos (scraper) {
     })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results
-  // return asyncPool(concurrency, uploads, tryCatchUpload)
 }
 
 function scrapePhotos (scraper) {
-  const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
-  ]
+  const urls = scraper.page ? createFormattedImageSet(scraper) : []
   if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
   const pageUrl = scraper.url
   urls.forEach((url) => {
@@ -47,6 +45,11 @@ function scrapePhotos (scraper) {
     }
     scraper.imageUrls[url].push(pageUrl)
   })
+}
+
+function createFormattedImageSet (scraper) {
+  return [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
+    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))]
 }
 
 function formatImageUrl (url, rootProtocol, rootdomain) {

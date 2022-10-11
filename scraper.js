@@ -55,19 +55,31 @@ class Scraper {
 
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
-      await this.beforeScrape[i](this)
+      try {
+        await this.beforeScrape[i](this)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
   async runAfterScrape () {
     for (let i = 0 ; i < this.afterScrape.length; i++) {
-      await this.afterScrape[i](this)
+      try {
+        await this.afterScrape[i](this)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
  async runBeforePageChange () {
     for (let i = 0 ; i < this.beforePageChange.length; i++) {
-      await this.beforePageChange[i](this)
+      try {
+        await this.beforePageChange[i](this)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 

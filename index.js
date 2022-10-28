@@ -19,6 +19,40 @@ app.post('/', async (req, res) => {
   }
 })
 
+app.post('/enqueue', async (req, res) => {
+  if (!req.body) {
+    const msg = 'no Pub/Sub message received'
+    console.error(`error: ${msg}`)
+    res.status(400).send(`Bad Request: ${msg}`)
+    return
+  }
+  if (!req.body.message) {
+    const msg = 'invalid Pub/Sub message format'
+    console.error(`error: ${msg}`)
+    res.status(400).send(`Bad Request: ${msg}`)
+    return
+  }
+  
+  const pubSubMessage = req.body.message
+  let data
+  try {
+    data = Buffer.from(pubSubMessage.data, 'base64').toString().trim()
+    data = JSON.parse(data)
+    if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(data))
+    const scraper = new Scraper(data)
+    await scraper.run()
+    const results = scraper.results()
+    if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
+    res.status(204).json(results)
+  } catch (error) {
+    const msg = 'Invalid Pub/Sub message: data property is not valid base64 encoded JSON'
+    console.error(`error: ${msg}: ${err}`)
+    res.status(400).send(`Bad Request: ${msg}`)
+    return
+  }
+  res.status(204).send()
+})
+
 const port = process.env.PORT || 8080
 
 app.listen(port, () => {

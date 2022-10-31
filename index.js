@@ -46,7 +46,7 @@ app.post('/enqueue', async (req, res) => {
     res.status(204).json(results)
   } catch (error) {
     const msg = 'Invalid Pub/Sub message: data property is not valid base64 encoded JSON'
-    console.error(`error: ${msg}: ${err}`)
+    console.error(`error: ${msg}: ${error}`)
     res.status(400).send(`Bad Request: ${msg}`)
     return
   }

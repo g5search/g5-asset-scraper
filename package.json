@@ -34,13 +34,13 @@
     "@google-cloud/pubsub": "^3.2.0",
     "@supercharge/promise-pool": "^1.7.0",
     "axios": "^0.20.0",
+    "bee-queue": "^1.4.0",
     "blockhash-core": "^0.1.0",
+    "bull-arena": "^3.30.0",
     "cheerio": "^1.0.0-rc.5",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "i": "^0.3.7",
-    "npm": "^8.19.2",
     "parse-address": "^1.1.2"
   },
   "devDependencies": {

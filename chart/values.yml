@@ -1,0 +1,42 @@
+global: 
+  applicationName: onboarder
+  region: us-central1
+configurations:
+  production:
+    configMapData:
+      ENABLE_LOGGING: false
+  prime:
+    configMapData:
+      ENABLE_LOGGING: true
+  staging:
+    configMapData:
+      ENABLE_LOGGING: true
+replicaCount: 2
+revisionHistoryLimit: 1
+image:
+  repository: gcr.io/g5-images/asset-scraper
+  tag: 1.0.0
+  pullPolicy: Always
+  resources:
+    requests:
+      memory: 2000Mi
+      cpu: 200m
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: 8085
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  livenessProbe:
+    httpGet:
+      path: /live
+      port: 8085
+    initialDelaySeconds: 10
+    periodSeconds: 10
+service:
+  name: Node
+  servicePort: 8085
+memorystore: 
+  purpose: bull
+  tier: BASIC
+  maxmemoryPolicy: allkeys-lfu

@@ -36,57 +36,57 @@ spec:
             cpu: "{{ .Values.image.resources.requests.cpu }}"
             memory: "{{ .Values.image.resources.requests.memory }}"
         env:
-          - name: NODE_TLS_REJECT_UNAUTHORIZED
-            value: 1
-          - name: MAX_CONCURRENT_JOBS
-            value: 2
-          - name: ENABLE_LOGGING
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Release.Name }}
-                key: ENABLE_LOGGING
-          - name: PUBSUB_TOPIC
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Release.Name }}
-                key: PUBSUB_TOPIC
-          - name: PUBSUB_SUBSCRIPTION
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Release.Name }}
-                key: PUBSUB_SUBSCRIPTION
-          - name: REDIS_URL
-            valueFrom:
-              configMapKeyRef:
-                name: {{ include "redis.urlConfigMapName" (list (include "cloud-helper.values.applicationName" $) (get .Values .Values.activeBullSubchart)) }}
-                key: {{ include "redis.urlConfigMapKey" . }}
-          - name: CLOUDINARY_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}
-                key: CLOUDINARY_SECRET
-          - name: CLOUDINARY_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}
-                key: CLOUDINARY_KEY
-          - name: CLOUDINARY_NAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}
-                key: CLOUDINARY_NAME
-          - name: CLOUDINARY_TMP_PREFIX
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}
-                key: CLOUDINARY_TMP_PREFIX
-          - name: PORT
-            value : "{{ .Values.service.servicePort }}"
-        {{- if .Values.image.livenessProbe }}
-        livenessProbe:
+        - name: NODE_TLS_REJECT_UNAUTHORIZED
+          value: "1"
+        - name: MAX_CONCURRENT_JOBS
+          value: "2"
+        - name: ENABLE_LOGGING
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}
+              key: ENABLE_LOGGING
+        - name: PUBSUB_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}
+              key: PUBSUB_TOPIC
+        - name: PUBSUB_SUBSCRIPTION
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}
+              key: PUBSUB_SUBSCRIPTION
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "redis.urlConfigMapName" (list (include "cloud-helper.values.applicationName" $) (get .Values .Values.activeBullSubchart)) }}
+              key: {{ include "redis.urlConfigMapKey" . }}
+        - name: CLOUDINARY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: CLOUDINARY_SECRET
+        - name: CLOUDINARY_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: CLOUDINARY_KEY
+        - name: CLOUDINARY_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: CLOUDINARY_NAME
+        - name: CLOUDINARY_TMP_PREFIX
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: CLOUDINARY_TMP_PREFIX
+        - name: PORT
+          value : "{{ .Values.service.servicePort }}"
+      {{- if .Values.image.livenessProbe }}
+      livenessProbe:
 {{ toYaml .Values.image.livenessProbe | indent 10 }}
-        {{- end }}
-        {{- if .Values.image.readinessProbe }}
-        readinessProbe:
+      {{- end }}
+      {{- if .Values.image.readinessProbe }}
+      readinessProbe:
 {{ toYaml .Values.image.readinessProbe | indent 10 }}
-        {{- end }}
+      {{- end }}

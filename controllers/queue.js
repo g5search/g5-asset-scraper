@@ -1,23 +1,32 @@
-const Arena = require('bull-arena')
 const Bee = require('bee-queue')
 
 /**
- * Initialize the Arena server middleware
- * @param {Object} app an express app
+ * Creates a new queue
+ * @param {Object} app an express instance
+ * @returns 
  */
 module.exports = function (app) {
-  const arena = Arena({
-    Bee,
-    queues: [{
-      name: 'Scrape_Requests',
-      hostId: 'Asset Scraper',
-      type: 'bee',
-      prefix: 'bq'
-    }]
-  }, {
-    basePath: '/arena',
-    disableListen: true,
-    url: process.env.REDIS_URL
+  const queue = new Bee('scraper', {
+    isWorker: true,
+    redis: {
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT
+    }
   })
-  app.use('/arena', arena)
+  queue.process(async (job, done) => {
+    const { data } = job
+    const Scraper = require('../scraper')
+    try {
+      const scraper = new Scraper(data)
+      await scraper.run()
+      const results = scraper.results()
+      // if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
+      // pubsub publish message with results
+      done(null, results)
+    } catch (error) {
+      done(error)
+    }
+  })
+
+  return queue
 }

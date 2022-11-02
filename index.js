@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 app.use(express.json({ limit: '1000kb' }))
 const Scraper = require('./scraper')
+const queue = require('./controllers/queue')(app)
 
 app.post('/', async (req, res) => {
   const { body } = req
@@ -51,6 +52,11 @@ app.post('/enqueue', async (req, res) => {
     return
   }
   res.status(204).send()
+})
+
+app.post('/queue', async (req, res) => {
+  queue.createJob(req.body).save()
+  res.status(204).send('Created')
 })
 
 const port = process.env.PORT || 8080

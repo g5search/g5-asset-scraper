@@ -36,7 +36,6 @@
     "axios": "^0.20.0",
     "bee-queue": "^1.4.0",
     "blockhash-core": "^0.1.0",
-    "bull-arena": "^3.30.0",
     "cheerio": "^1.0.0-rc.5",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",

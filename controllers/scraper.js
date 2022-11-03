@@ -1,6 +1,6 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
-const scrapers = require('./scrapers')
+const scrapers = require('../scrapers')
 
 /**
  * Scrapes websites for assets (address, imeages, amentiies, emails)

@@ -1,5 +1,5 @@
 const PromisePool = require('@supercharge/promise-pool')
-const cloudinary = require('../cloudinary')
+const cloudinary = require('../controllers/cloudinary')
 const { getUniqueImageUrls } = require('../controllers/photos')
 // const concurrency = 10
 
@@ -73,4 +73,3 @@ function formatImageUrl (url, rootProtocol, rootdomain) {
   }
   return `${rootProtocol}://${rootdomain}/${cleanPath}`
 }
-

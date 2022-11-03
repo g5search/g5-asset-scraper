@@ -1,11 +1,6 @@
 const Bee = require('bee-queue')
 
-/**
- * Creates a new queue
- * @param {Object} app an express instance
- * @returns 
- */
-module.exports = function (app) {
+module.exports = function () {
   const queue = new Bee('scraper', {
     isWorker: true,
     redis: { url: process.env.REDIS_URL }
@@ -13,7 +8,7 @@ module.exports = function (app) {
   queue.process(async (job, done) => {
     console.time('SCRAPE_JOB')
     const { data } = job
-    const Scraper = require('../scraper')
+    const Scraper = require('./scraper')
     try {
       const scraper = new Scraper(data)
       await scraper.run()
@@ -23,6 +18,8 @@ module.exports = function (app) {
       console.timeEnd('SCRAPE_JOB')
       done(null, results)
     } catch (error) {
+      console.timeEnd('SCRAPE_JOB')
+      console.error(error)
       done(error)
     }
   })

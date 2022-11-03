@@ -27,18 +27,6 @@ image:
     requests:
       memory: 2000Mi
       cpu: 200m
-  # readinessProbe:
-  #   httpGet:
-  #     path: /ready
-  #     port: 8085
-  #   initialDelaySeconds: 10
-  #   periodSeconds: 10
-  # livenessProbe:
-  #   httpGet:
-  #     path: /live
-  #     port: 8085
-  #   initialDelaySeconds: 10
-  #   periodSeconds: 10
 service:
   name: Node
   servicePort: 8085
@@ -47,3 +35,4 @@ memorystore:
   purpose: bull
   tier: BASIC
   maxmemoryPolicy: allkeys-lfu
+  readReplicasMode: READ_REPLICAS_DISABLED

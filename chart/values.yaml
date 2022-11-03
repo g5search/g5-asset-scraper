@@ -7,16 +7,19 @@ configurations:
       ENABLE_LOGGING: "false"
       PUBSUB_TOPIC: "asset-requests"
       PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+      PROJECT_ID: "opex-staging-b877"
   prime:
     configMapData:
       ENABLE_LOGGING: "true"
       PUBSUB_TOPIC: "asset-requests"
       PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+      PROJECT_ID: "opex-staging-b877"
   staging:
     configMapData:
       ENABLE_LOGGING: "true"
       PUBSUB_TOPIC: "asset-requests"
       PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+      PROJECT_ID: "opex-staging-b877"
 replicaCount: 2
 revisionHistoryLimit: 1
 image:

@@ -26,6 +26,52 @@
       "slug": "features-amenities"
     }
   },
+  "amenitiesConfig": {
+    "community_amenities": [
+      {
+        "text": "Basketball Court",
+        "value": "basketballCourt",
+        "variants": [
+          "basketball"
+        ]
+      },
+      {
+        "text": "Business Center",
+        "value": "businessCenter",
+        "variants": []
+      },
+      {
+        "text": "Carport Parking Available",
+        "value": "carportParking",
+        "variants": [
+          "carport"
+        ]
+      },
+      {
+        "text": "Close to Dog Park",
+        "value": "closeToDogPark",
+        "variants": [
+          "near a dog park",
+          "by a dog park"
+        ]
+      }
+    ],
+    "apartment_amenities": [
+      {
+        "text": "Air Conditioning",
+        "value": "airConditioning",
+        "variants": [
+          "air conditioner",
+          "ac"
+        ]
+      },
+      {
+        "text": "Cable Included",
+        "value": "cableIncluded",
+        "variants": []
+      }
+    ]
+  },
   "rootProtocol": "https",
   "vertical": "MF",
   "rootdomain" : "solaire8250.com",

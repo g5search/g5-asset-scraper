@@ -6,3 +6,6 @@ dependencies:
   - name: memorystore
     version: "1.0.1"
     repository: "@g5-multiverse-helm3-repositories"
+  - name: cloud-helper
+    version: "1.0.1"
+    repository: "@g5-multiverse-helm3-repositories"

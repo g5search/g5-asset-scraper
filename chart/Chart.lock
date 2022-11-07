@@ -2,5 +2,8 @@ dependencies:
 - name: memorystore
   repository: gs://g5-multiverse-helm3-repositories
   version: 1.0.1
+- name: cloud-helper
+  repository: gs://g5-multiverse-helm3-repositories
+  version: 1.0.1
 digest: sha256:54b5eb5aba0e27f7008a1fc47e7c471ea2d67a1da05c2b998880ee231db31052
 generated: "2022-08-11T17:22:53.32366506-07:00"

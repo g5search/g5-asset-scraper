@@ -17,7 +17,7 @@ configurations:
   staging:
     configMapData:
       ENABLE_LOGGING: "true"
-      PUBSUB_TOPIC: "asset-requests"
+      PUBSUB_TOPIC: "asset-responses"
       PUBSUB_SUBSCRIPTION: "assetRequestSubs"
       PROJECT_ID: "opex-staging-b877"
 replicaCount: 2

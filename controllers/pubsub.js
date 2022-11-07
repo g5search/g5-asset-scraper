@@ -1,5 +1,4 @@
 const { PubSub } = require('@google-cloud/pubsub')
-// const queue = require('./queue')()
 const projectId = process.env.PROJECT_ID
 const pubsub = new PubSub({ projectId })
 const subscriptionNameOrId = process.env.PUBSUB_SUBSCRIPTION
@@ -22,7 +21,6 @@ module.exports = function () {
       const messageHandler = (message) => {
         console.log(`******* Received message ${message.id}:`)
         console.log(`******* Data: ${message.data}`)
-        console.log(`******* Attributes: ${message.attributes}`)
         console.log(`******* Queue is Ready: ${queue._isReady}`)
         try {
           let data
@@ -43,10 +41,10 @@ module.exports = function () {
       const dataBuffer = Buffer.from(JSON.stringify(message))
       
       try {
-        const messageId = await pubsub.topic(process.env.PUBSUB_TOPIC).publishMessage(dataBuffer)
+        const messageId = await pubsub.topic(process.env.PUBSUB_TOPIC).publishMessage({ data: dataBuffer })
         console.log(`******* Message ${messageId} published.`)
       } catch (error) {
-        
+        console.error(`******* Received error while publishing: ${error.message}`)
       }
     }
   }

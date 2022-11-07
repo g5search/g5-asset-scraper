@@ -1,4 +1,5 @@
 const Bee = require('bee-queue')
+const { publish } = require('./pubsub')()
 
 module.exports = function () {
   const queue = new Bee('scraper', {
@@ -14,7 +15,7 @@ module.exports = function () {
       await scraper.run()
       const results = scraper.results()
       if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
-      // pubsub publish message with results
+      await publish(results)
       console.timeEnd('SCRAPE_JOB')
       done(null, results)
     } catch (error) {

@@ -24,6 +24,9 @@ spec:
         app: "{{  .Release.Name }}"
         version: "current"
     spec:
+      # serviceAccountName: {{ .Release.Name }}
+      # nodeSelector:
+      #   iam.gke.io/gke-metatada-server: "true"
       containers:
       - name: "{{  .Chart.Name  }}"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

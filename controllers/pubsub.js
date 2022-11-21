@@ -12,6 +12,11 @@ const timeout = 10
  */
 module.exports = function () {
   return {
+    
+    
+    
+    
+    
     subscribeWithFlowControl (queue) {
       const subscriberOptions = {
         flowControl: { maxMessages }
@@ -37,6 +42,11 @@ module.exports = function () {
         subscription.close()
       }, timeout * 1000)
     },
+
+
+
+
+
     async publish (message) {
       const dataBuffer = Buffer.from(JSON.stringify(message))
       

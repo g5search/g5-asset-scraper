@@ -1,41 +1,85 @@
 global: 
   applicationName: asset-scraper
   region: us-central1
-configurations:
-  production:
-    configMapData:
-      ENABLE_LOGGING: "false"
-      PUBSUB_TOPIC: "asset-requests"
-      PUBSUB_SUBSCRIPTION: "assetRequestSubs"
-      PROJECT_ID: "opex-staging-b877"
-  prime:
-    configMapData:
-      ENABLE_LOGGING: "true"
-      PUBSUB_TOPIC: "asset-requests"
-      PUBSUB_SUBSCRIPTION: "assetRequestSubs"
-      PROJECT_ID: "opex-staging-b877"
-  staging:
-    configMapData:
-      ENABLE_LOGGING: "true"
-      PUBSUB_TOPIC: "asset-responses"
-      PUBSUB_SUBSCRIPTION: "assetRequestSubs"
-      PROJECT_ID: "opex-staging-b877"
-replicaCount: 2
-revisionHistoryLimit: 1
-image:
-  repository: gcr.io/g5-images/asset-scraper
-  tag: 1.0.0
-  pullPolicy: Always
+node-web-service:
+  database:
+    enabled: false
+  cache:
+    enabled: true
+    readReplicasMode: "READ_REPLICAS_DISABLED"
+  image:
+    repository: gcr.io/g5-images/asset-scraper
+  isInternetFacing: true
+  hasMetrics: false
+  replicaCount: 2
+  revisionHistoryLimit: 1
   resources:
     requests:
       memory: 2000Mi
       cpu: 200m
-service:
-  name: Node
-  servicePort: 8085
-activeBullSubchart: "memorystore"
-memorystore: 
-  purpose: bull
-  tier: BASIC
-  maxmemoryPolicy: allkeys-lfu
-  readReplicasMode: READ_REPLICAS_DISABLED
+  topics:
+    asset-responses-2:
+      create: true
+  subscriptions:
+    assetRequestSubs-2: {}
+  configurations:
+    production:
+      configMapData:
+        ENABLE_LOGGING: "false"
+        PUBSUB_TOPIC: "asset-requests"
+        PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+        PROJECT_ID: "opex-staging-b877"
+    prime:
+      configMapData:
+        ENABLE_LOGGING: "true"
+        PUBSUB_TOPIC: "asset-requests"
+        PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+        PROJECT_ID: "opex-staging-b877"
+    staging:
+      configMapData:
+        ENABLE_LOGGING: "true"
+        PUBSUB_TOPIC: "asset-responses"
+        PUBSUB_SUBSCRIPTION: "assetRequestSubs"
+        PROJECT_ID: "opex-staging-b877"
+  env:
+  - name: NODE_TLS_REJECT_UNAUTHORIZED
+    value: "1"
+  - name: MAX_CONCURRENT_JOBS
+    value: "2"
+  - name: ENABLE_LOGGING
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: ENABLE_LOGGING
+  - name: PUBSUB_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PUBSUB_TOPIC
+  - name: PUBSUB_SUBSCRIPTION
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PUBSUB_SUBSCRIPTION
+  - name: CLOUDINARY_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_SECRET
+  - name: CLOUDINARY_KEY
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_KEY
+  - name: CLOUDINARY_NAME
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_NAME
+  - name: CLOUDINARY_TMP_PREFIX
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_TMP_PREFIX
+  - name: PORT
+    value : "8085"

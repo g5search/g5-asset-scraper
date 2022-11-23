@@ -1,0 +1,9 @@
+global:
+  projectID: asm-testing-staging-36bc
+  isProduction: false
+  computeNetworkSelfLink: https://www.googleapis.com/compute/v1/projects/asm-testing-staging-36bc/global/networks/gke-cluster
+node-web-service:
+  configuration: staging
+  environment: asm-testing-staging
+  cache: 
+    instanceSuffix: a

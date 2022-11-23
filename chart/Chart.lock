@@ -1,9 +1,6 @@
 dependencies:
-- name: memorystore
-  repository: gs://g5-multiverse-helm3-repositories
-  version: 1.0.1
-- name: cloud-helper
-  repository: gs://g5-multiverse-helm3-repositories
-  version: 1.0.1
-digest: sha256:54b5eb5aba0e27f7008a1fc47e7c471ea2d67a1da05c2b998880ee231db31052
-generated: "2022-08-11T17:22:53.32366506-07:00"
+- name: node-web-service
+  repository: file://../../charts/node-web-service
+  version: 0.1.0
+digest: sha256:9125937bb9a8efec9d769d2851b413a5de55532f71ff34d62f6ccce8307fa975
+generated: "2022-11-23T08:47:23.096721-08:00"

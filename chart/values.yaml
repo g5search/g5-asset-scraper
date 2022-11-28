@@ -22,7 +22,7 @@ node-web-service:
     asset-responses-2:
       create: true
   subscriptions:
-    asset-request-subs: {}
+    asset-responses-2: {}
   configurations:
     production:
       configMapData:
@@ -39,8 +39,8 @@ node-web-service:
     staging:
       configMapData:
         ENABLE_LOGGING: "true"
-        PUBSUB_TOPIC: "asset-responses"
-        PUBSUB_SUBSCRIPTION: "asset-request-subs"
+        PUBSUB_TOPIC: "asset-responses-2"
+        PUBSUB_SUBSCRIPTION: "asset-responses-2"
         PROJECT_ID: "opex-staging-b877"
   env:
   - name: NODE_TLS_REJECT_UNAUTHORIZED

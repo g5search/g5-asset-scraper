@@ -16,6 +16,7 @@
     "docker:push:prod": "docker push $npm_package_config_imageRepo:$npm_package_version",
     "docker:push:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
     "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
+    "helm:upgrade:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); helm upgrade asset-scraper ./chart -f ./chart/opex-staging.yaml --set=image.tag=$branch",
     "dev": "nodemon ./index.js",
     "test": "jest"
   },

@@ -19,12 +19,7 @@ DisableYarn: true
 # to denote that it is a multiline string.
 # PreDependency: |-
 #   RUN any-valid-dockerfile-commands
-PreDependency: |-
-  FROM node:14
-  WORKDIR /usr/src/app
-  COPY package*.json ./
-  RUN npm install --only=production
-  COPY . ./
+
 # Replaces the default command for installing dependencies (via npm). Can be
 # any one-line command that will run successfully in the build container.
 DependencyOverride: "npm install"

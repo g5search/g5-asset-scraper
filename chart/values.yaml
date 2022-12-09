@@ -42,7 +42,7 @@ node-web-service:
         ENABLE_LOGGING: "true"
         PUBSUB_TOPIC: "asset-responses-2"
         PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
-        PROJECT_ID: "opex-staging-b877"
+        PROJECT_ID: "asm-testing-staging-36bc"
   env:
   - name: NODE_TLS_REJECT_UNAUTHORIZED
     value: "1"

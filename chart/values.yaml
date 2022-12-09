@@ -10,7 +10,7 @@ node-web-service:
     instanceSuffix: "a"
   image:
     name: gcr.io/g5-images/asset-scraper
-  isInternetFacing: true
+  isInternetFacing:  false
   hasMetrics: false
   replicaCount: 2
   revisionHistoryLimit: 1
@@ -23,7 +23,7 @@ node-web-service:
     asset-responses-2:
       create: true
   subscriptions:
-    asset-responses-2: {}
+    client: {}
   configurations:
     production:
       configMapData:

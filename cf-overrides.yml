@@ -36,8 +36,9 @@ DisableBower: true
 # A list of additional environment variables that should be present in the test
 # container. Some variables are already set automatically and this will not
 # override them.
-
-# TestEnvironment:
+#TestEnvironment:
+#  - A_VAR=${{A_CODEFRESH_VARIABLE}}
+#  - OTHER_VAR=something
 
 # Replaces the default command for running tests. Can be any one-line command
 # that will run successfully in the test container.

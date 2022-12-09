@@ -1,7 +1,7 @@
 const { PubSub } = require('@google-cloud/pubsub')
 const projectId = process.env.PROJECT_ID
 const pubsub = new PubSub({ projectId })
-const subscriptionNameOrId = process.env.PUBSUB_SUBSCRIPTION
+const subscriptionNameOrId = client
 const maxMessages = 3
 const timeout = 10
 

@@ -5,5 +5,4 @@ version: 1.0.0
 dependencies:
   - name: node-web-service
     version: "0.1.0"
-    #repository: "file://../../charts/node-web-service"
     repository: "@g5-multiverse-helm3-repositories"

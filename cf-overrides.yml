@@ -19,7 +19,12 @@ DisableYarn: true
 # to denote that it is a multiline string.
 # PreDependency: |-
 #   RUN any-valid-dockerfile-commands
-
+PreDependency: |-
+  FROM node:14
+  WORKDIR /usr/src/app
+  COPY package*.json ./
+  RUN npm install --only=production
+  COPY . ./
 # Replaces the default command for installing dependencies (via npm). Can be
 # any one-line command that will run successfully in the build container.
 DependencyOverride: "npm install"
@@ -36,7 +41,7 @@ DisableBower: true
 
 # Replaces the default command for running tests. Can be any one-line command
 # that will run successfully in the test container.
-TestOverride: " "
+TestOverride: "echo 'testMe'"
 
 # Default to false. Setting to true will enable the debug flag on CodeClimate
 # submission.

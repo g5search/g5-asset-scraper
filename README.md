@@ -35,3 +35,17 @@ The post payload accepts a JSON body.
 ## Pub Sub Worker
 
 Deployed as a private service, the API will not be accessible on the internet, so it uses pubsub to handle IO.
+
+
+## Helm Dependencies
+
+If you encounter issues deploying, it might be because your system does not have access to G5 helpers.
+
+[GCS Helm Plugin](https://github.com/hayorov/helm-gcs)
+``` console
+helm repo add g5-multiverse-helm3-repositories gs://g5-multiverse-helm3-repositories
+helm plugin install https://github.com/hayorov/helm-gcs.git
+helm plugin update gcs
+helm gcs init gs://g5-multiverse-helm3-repositories
+helm dep up
+```

@@ -17,7 +17,12 @@ DisableYarn: true
 # Any valid Dockerfile commands, which will be inserted directly before
 # project-specific dependencies are installed. Note the use of the `|-`
 # to denote that it is a multiline string.
-# PreDependency: |-
+PreDependency: |-
+  FROM node:14
+  WORKDIR /usr/src/app
+  COPY package*.json ./
+  RUN npm install --only=production
+  COPY . ./
 #   RUN any-valid-dockerfile-commands
 
 # Replaces the default command for installing dependencies (via npm). Can be

@@ -1,9 +1,8 @@
 # REQUIRED - Valid tag for node image to use as the basis for this
 # application's Docker image. See https://hub.docker.com/r/library/node/tags/
-BaseImageTag: "14.0.0"
+BaseImageTag: "14.21.2"
 
-CIPlan: "g5search/ci-plan-node:make-builds-work"
-#CIPlan: "g5search/ci-plan-node:v1.0.2"
+CIPlan: "g5search/ci-plan-node:v1.1.4"
 
 # Whether you want Yarn-related commands or not. It used to be hot and now it's
 # not, I guess? It might be in the garbage jump of "old" Javascript tools like
@@ -23,7 +22,6 @@ PreDependency: |-
   COPY package*.json ./
   RUN npm install --only=production
   COPY . ./
-#   RUN any-valid-dockerfile-commands
 
 # Replaces the default command for installing dependencies (via npm). Can be
 # any one-line command that will run successfully in the build container.

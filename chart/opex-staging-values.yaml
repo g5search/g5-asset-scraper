@@ -2,7 +2,8 @@ global:
   projectID: opex-staging-b877
   isProduction: false
   computeNetworkSelfLink: https://www.googleapis.com/compute/v1/projects/opex-staging-b877/global/networks/gke-cluster
-configuration: staging
-environment: opex-staging
-memorystore: 
-  instanceSuffix: a
+node-web-service:
+  configuration: staging
+  environment: opex-staging
+  memorystore: 
+    instanceSuffix: a

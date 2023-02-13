@@ -34,12 +34,13 @@ module.exports = function () {
           queue.createJob(data).save()
         } catch (error) {
           console.error(`******* Error: ${error}`)
+          message.ack()
         }
         message.ack()
       }
       subscription.on('message', messageHandler)
       setTimeout(() => {
-        subscription.close()
+        // subscription.close()
       }, timeout * 1000)
     },
 

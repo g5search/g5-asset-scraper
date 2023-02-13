@@ -18,6 +18,7 @@
     "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
     "helm:upgrade:staging": "cd chart && branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse --short $branch); helm upgrade --install --namespace=default asset-scraper --values=asm-testing-staging-values.yaml --set=node-web-service.image.tag=$branch-$sha .",
     "dev": "nodemon ./index.js",
+    "deploy": "./upgrade.sh",
     "test": "jest"
   },
   "repository": {

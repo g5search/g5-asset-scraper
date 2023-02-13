@@ -2,6 +2,7 @@ const { PubSub } = require('@google-cloud/pubsub')
 const projectId = process.env.PROJECT_ID
 const pubsub = new PubSub({ projectId })
 const subscriptionNameOrId = process.env.PUBSUB_SUBSCRIPTION
+const topicName = process.env.PUBSUB_TOPIC
 const maxMessages = 3
 const timeout = 10
 
@@ -44,15 +45,16 @@ module.exports = function () {
       }, timeout * 1000)
     },
 
-
-
-
-
+    /**
+     * Publishes result as message to PubSub topic
+     * @param {Object} message 
+     */
     async publish (message) {
       const dataBuffer = Buffer.from(JSON.stringify(message))
       
       try {
-        const messageId = await pubsub.topic(process.env.PUBSUB_TOPIC).publishMessage({ data: dataBuffer })
+        console.log(dataBuffer)
+        const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
         console.log(`******* Message ${messageId} published.`)
       } catch (error) {
         console.error(`******* Received error while publishing: ${error.message}`)

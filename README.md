@@ -36,7 +36,14 @@ The post payload accepts a JSON body.
 
 Deployed as a private service, the API will not be accessible on the internet, so it uses pubsub to handle IO.
 
+Checkout the branch you wish to deploy.
+Set the Kubernetes context you want to deploy to.
+Run `npm run deploy`
 
+Override defaults by running
+``` sh
+./upgrade.sh -t <tag> -p <project> -d <deployment_name>
+```
 ## Helm Dependencies
 
 If you encounter issues deploying, it might be because your system does not have access to G5 helpers.

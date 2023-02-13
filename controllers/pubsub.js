@@ -1,10 +1,10 @@
+const enableLogging = process.env.ENABLE_LOGGING === 'true'
 const { PubSub } = require('@google-cloud/pubsub')
 const projectId = process.env.PROJECT_ID
 const pubsub = new PubSub({ projectId })
 const subscriptionNameOrId = process.env.PUBSUB_SUBSCRIPTION
 const topicName = process.env.PUBSUB_TOPIC
 const maxMessages = 3
-const timeout = 10
 
 /**
  * Provides PubSub interface
@@ -22,11 +22,11 @@ module.exports = function () {
         flowControl: { maxMessages }
       }
       const subscription = pubsub.subscription(subscriptionNameOrId, subscriberOptions)
-      console.log(`******* Listening for messages on ${subscription.name}`)
+      if (enableLogging) console.log(`******* Listening for messages on ${subscription.name}`)
       const messageHandler = (message) => {
-        console.log(`******* Received message ${message.id}:`)
-        console.log(`******* Data: ${message.data}`)
-        console.log(`******* Queue is Ready: ${queue._isReady}`)
+        if (enableLogging) console.log(`******* Received message ${message.id}:`)
+        if (enableLogging) console.log(`******* Data: ${message.data}`)
+        if (enableLogging) console.log(`******* Queue is Ready: ${queue._isReady}`)
         try {
           let data
           data = Buffer.from(message.data, 'base64').toString().trim()
@@ -39,10 +39,6 @@ module.exports = function () {
         message.ack()
       }
       subscription.on('message', messageHandler)
-      setTimeout(() => {
-        // subscription.close()
-        // TODO should I be closing the subscription?
-      }, timeout * 1000)
     },
 
     /**
@@ -55,7 +51,7 @@ module.exports = function () {
       try {
         console.log(dataBuffer)
         const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
-        console.log(`******* Message ${messageId} published.`)
+        if (enableLogging) console.log(`******* Message ${messageId} published.`)
       } catch (error) {
         console.error(`******* Received error while publishing: ${error.message}`)
       }

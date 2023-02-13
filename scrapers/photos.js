@@ -1,7 +1,7 @@
+const enableLogging = process.env.ENABLE_LOGGING === 'true'
 const PromisePool = require('@supercharge/promise-pool')
 const cloudinary = require('../controllers/cloudinary')
 const { getUniqueImageUrls } = require('../controllers/photos')
-// const concurrency = 10
 
 module.exports = {
   init,
@@ -19,9 +19,11 @@ function init (Scraper) {
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
     .map(url => formatImageUrl(url))
-  if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE IMAGE DEDUPE', count: imageUrls.length })
+  if (enableLogging) console.log({ msg: 'BEFORE IMAGE DEDUPE', count: imageUrls.length })
+
   const uniqueUrls = await getUniqueImageUrls(imageUrls)
-  if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
+  if (enableLogging) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
+
   const uploads = uniqueUrls.map((imageUrl) => {
     const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
     return { url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } }
@@ -38,7 +40,7 @@ async function uploadPhotos (scraper) {
 
 function scrapePhotos (scraper) {
   const urls = scraper.page ? createFormattedImageSet(scraper) : []
-  if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
+  if (enableLogging) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
   const pageUrl = scraper.url
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {

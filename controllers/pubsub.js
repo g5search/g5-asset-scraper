@@ -12,11 +12,10 @@ const timeout = 10
  */
 module.exports = function () {
   return {
-    
-    
-    
-    
-    
+    /**
+     * Initializes PubSub subscription and listens for messages
+     * @param {Object} queue 
+     */
     subscribeWithFlowControl (queue) {
       const subscriberOptions = {
         flowControl: { maxMessages }
@@ -41,6 +40,7 @@ module.exports = function () {
       subscription.on('message', messageHandler)
       setTimeout(() => {
         // subscription.close()
+        // TODO should I be closing the subscription?
       }, timeout * 1000)
     },
 

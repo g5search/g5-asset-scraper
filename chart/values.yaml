@@ -23,6 +23,8 @@ node-web-service:
   topics:
     asset-responses-2:
       create: true
+    asset-results-2:
+      create: true
   subscriptions:
     asset-responses-2: {}
   configurations:
@@ -35,13 +37,13 @@ node-web-service:
     prime:
       configMapData:
         ENABLE_LOGGING: "true"
-        PUBSUB_TOPIC: "asset-requests"
+        PUBSUB_TOPIC: "asset-results"
         PUBSUB_SUBSCRIPTION: "assetRequestSubs"
         PROJECT_ID: "opex-staging-b877"
     staging:
       configMapData:
         ENABLE_LOGGING: "true"
-        PUBSUB_TOPIC: "asset-responses-2"
+        PUBSUB_TOPIC: "asset-results-2"
         PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
         PROJECT_ID: "opex-staging-b877"
   env:

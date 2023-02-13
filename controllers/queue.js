@@ -8,7 +8,7 @@ module.exports = function () {
     redis: { url: process.env.REDIS_URL }
   })
   queue.process(concurrency, async (job) => {
-    console.time('SCRAPE_JOB')
+    console.time(`SCRAPE_JOB: ${job.id}`)
     const { data } = job
     const Scraper = require('./scraper')
     try {
@@ -16,7 +16,7 @@ module.exports = function () {
       await scraper.run()
       const results = scraper.results()
       if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
-      // await publish(results)
+      await publish(results)
       console.timeEnd(`SCRAPE_JOB: ${job.id}`)
       console.log(results)
       // return results

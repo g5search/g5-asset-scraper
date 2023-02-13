@@ -59,6 +59,11 @@ node-web-service:
       configMapKeyRef:
         name: asset-scraper
         key: PUBSUB_TOPIC
+  - name: PROJECT_ID
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PROJECT_ID
   - name: PUBSUB_SUBSCRIPTION
     valueFrom:
       configMapKeyRef:

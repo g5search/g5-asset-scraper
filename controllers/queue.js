@@ -27,8 +27,8 @@ module.exports = function () {
     }
   })
 
-  queue.checkStalledJobs(5000, (err, numStalled) => {
-    // prints the number of stalled jobs detected every 5000 ms
+  queue.checkStalledJobs(60000, (err, numStalled) => {
+    // prints the number of stalled jobs detected every 60000 ms
     console.log('Checked stalled jobs', numStalled)
   })
 

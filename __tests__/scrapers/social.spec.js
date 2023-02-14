@@ -29,7 +29,7 @@ describe('Social Scraper' , () => {
   })
 
   test('getSocialLinks with Selector and match', () => {
-    jest.spyOn('../../scrapers/social', 'compareLinks')
+    jest.spyOn(require('../../scrapers/social'), 'compareLinks')
     scraper.$ = cheerio.load(html)
     // init(scraper)
     // getSocialLinks(scraper)

@@ -1,10 +1,11 @@
-const Scraper = require('../scraper')
 const mockAxios = require('axios')
 const cheerio = require('cheerio')
-const html = require('./config/html')
-const params = require('./config/params')
 const { PubSub } = require('@google-cloud/pubsub')
 
+const Scraper = require('../../controllers/scraper')
+const html = require('../config/html')
+const params = require('../config/params')
+const amenitiesConfig = require('../config/amenitites-config')
 
 describe('Scraper class', () => {
 
@@ -17,22 +18,22 @@ describe('Scraper class', () => {
 
   test('bad constructor params', () => {
     expect(() => {
-      new Scraper({ rootProtocol: null })
+      new Scraper({ rootProtocol: null, amenitiesConfig })
     }).toThrow('rootProtocol must be set and be either http or https')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: [] })
+      new Scraper({ rootProtocol: 'https', pages: [], amenitiesConfig })
     }).toThrow('pages must be a non-empty array')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: null })
+      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: null, amenitiesConfig })
     }).toThrow('scrapers must be an object')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: '' })
+      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: '', amenitiesConfig })
     }).toThrow('rootdomain must be set and a string')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: 1 })
+      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: 1, amenitiesConfig })
     }).toThrow('rootdomain must be set and a string')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
+      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null, amenitiesConfig })
     }).toThrow('rootdomain must be set and a string')
   })
 

@@ -135,11 +135,11 @@ class Scraper {
   }
 
   validate (params) {
-    if (!params.amenitiesConfig || typeof params.amenitiesConfig !== 'object') throw new Error ('missing amenities config')
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
     if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
+    if (!params.amenitiesConfig || typeof params.amenitiesConfig !== 'object') throw new Error ('missing amenities config')
   }
 }
 

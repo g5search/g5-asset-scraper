@@ -49,12 +49,15 @@ module.exports = function () {
       const dataBuffer = Buffer.from(JSON.stringify(message))
       
       try {
-        console.log(dataBuffer)
         const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
         if (enableLogging) console.log(`******* Message ${messageId} published.`)
+        return messageId
       } catch (error) {
         console.error(`******* Received error while publishing: ${error.message}`)
       }
     }
   }
 }
+
+// test the pubsub controller with jest
+

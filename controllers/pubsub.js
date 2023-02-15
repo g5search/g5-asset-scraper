@@ -32,7 +32,6 @@ module.exports = function () {
           queue.createJob(data).save()
         } catch (error) {
           console.error(`******* Error: ${error}`)
-          message.ack()
         }
         message.ack()
       }
@@ -52,6 +51,7 @@ module.exports = function () {
         return messageId
       } catch (error) {
         console.error(`******* Received error while publishing: ${error.message}`)
+        return error.message
       }
     }
   }

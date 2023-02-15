@@ -25,8 +25,6 @@ module.exports = function () {
       if (enableLogging) console.log(`******* Listening for messages on ${subscription.name}`)
       const messageHandler = (message) => {
         if (enableLogging) console.log(`******* Received message ${message.id}:`)
-        if (enableLogging) console.log(`******* Data: ${message.data}`)
-        if (enableLogging) console.log(`******* Queue is Ready: ${queue._isReady}`)
         try {
           let data
           data = Buffer.from(message.data, 'base64').toString().trim()
@@ -58,6 +56,3 @@ module.exports = function () {
     }
   }
 }
-
-// test the pubsub controller with jest
-

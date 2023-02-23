@@ -5,5 +5,5 @@ global:
 node-web-service:
   configuration: production
   environment: opex-prod
-  memorystore: 
+  cache: 
     instanceSuffix: a

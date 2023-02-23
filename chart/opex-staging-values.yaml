@@ -5,5 +5,5 @@ global:
 node-web-service:
   configuration: staging
   environment: opex-staging
-  memorystore: 
+  cache: 
     instanceSuffix: a

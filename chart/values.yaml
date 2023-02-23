@@ -8,7 +8,6 @@ node-web-service:
   cache:
     enabled: true
     readReplicasMode: "READ_REPLICAS_DISABLED"
-    instanceSuffix: "a"
   image:
     name: gcr.io/g5-images/asset-scraper
   isInternetFacing:  false

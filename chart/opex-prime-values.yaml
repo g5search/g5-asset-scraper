@@ -5,5 +5,5 @@ global:
 node-web-service:
   configuration: prime
   environment: opex-prime
-  memorystore: 
+  cache: 
     instanceSuffix: a

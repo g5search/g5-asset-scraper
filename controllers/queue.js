@@ -25,10 +25,10 @@ module.exports = function () {
     }
   })
 
-  queue.checkStalledJobs(60000, (err, numStalled) => {
-    // prints the number of stalled jobs detected every 60000 ms
-    if (enableLogging) console.log('Checked stalled jobs', numStalled)
-  })
+  // queue.checkStalledJobs(60000, (err, numStalled) => {
+  //   // prints the number of stalled jobs detected every 60000 ms
+  //   if (enableLogging) console.log('Checked stalled jobs', numStalled)
+  // })
 
   return queue
 }

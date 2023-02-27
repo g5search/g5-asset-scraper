@@ -3,6 +3,9 @@ description: A Helm chart for Kubernetes
 name: asset-scraper
 version: 1.0.0
 dependencies:
+  - name: pubsub
+    repository: '@g5-multiverse-helm3-repositories'
+    version: 1.0.0
   - name: node-web-service
     version: "0.1.0"
     repository: "@g5-multiverse-helm3-repositories"

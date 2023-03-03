@@ -15,6 +15,17 @@ Deploy()
   printf "Deployed ${GREEN}$BRANCH-$SHA ${NC}to ${GREEN}$CONTEXT ${NC} \n";
 }
 
+Confirm()
+{
+    printf "Deploy ${GREEN}$DEPLOYMENT:$TAG ${NC}to ${GREEN}$PROJECT${NC}? \n";
+  read -p "[Y/n]: " CONFIRM;
+  if [ "$CONFIRM" != "y" ]; then
+    printf "Exiting... \n";
+    exit 1;
+  fi
+  Deploy;
+}
+
 case $CONTEXT in 
   *opex-prod*) PROJECT="prod";;
   *opex-prime*) PROJECT="prime";;
@@ -35,4 +46,4 @@ do
   esac
 done
 
-Deploy;
+Confirm;

@@ -1,12 +1,19 @@
 const enableLogging = process.env.ENABLE_LOGGING === 'true'
 const Bee = require('bee-queue')
+const redis = require('redis')
 const { publish } = require('./pubsub')()
 const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1)
-
+const redisOptions = {
+  url: process.env.REDIS_URL,
+  retry_strategy: function (options) {
+    return Math.min(options.attempt * 100, 3000)
+  }
+}
 
 module.exports = function () {
+  const client = redis.createClient(redisOptions)
   const queue = new Bee('scraper', {
-    redis: { url: process.env.REDIS_URL }
+    redis: client
   })
   queue.process(concurrency, async (job) => {
     console.time(`SCRAPE_JOB: ${job.id}`)

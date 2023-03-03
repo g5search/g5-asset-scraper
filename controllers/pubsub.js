@@ -43,9 +43,9 @@ module.exports = function () {
      * @param {Object} message 
      */
     async publish (message) {
-      const dataBuffer = Buffer.from(JSON.stringify(message))
-      
       try {
+        if (!message) throw new Error({ message: 'No message provided' })
+        const dataBuffer = Buffer.from(JSON.stringify(message))
         const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
         if (enableLogging) console.log(`******* Message ${messageId} published.`)
         return messageId

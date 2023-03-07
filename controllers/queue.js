@@ -22,8 +22,7 @@ module.exports = function () {
     console.debug('REDIS connection is up and running')
   })
   const queue = new Bee('scraper', {
-    redis: client,
-    removeOnSuccess: true
+    redis: client
   })
   queue.process(concurrency, async (job) => {
     console.time(`SCRAPE_JOB: ${job.id}`)

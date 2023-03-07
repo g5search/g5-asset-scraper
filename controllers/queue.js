@@ -12,8 +12,18 @@ const redisOptions = {
 
 module.exports = function () {
   const client = redis.createClient(redisOptions)
+  client.on('end', () => {
+    console.debug('REDIS connection has been closed')
+  })
+  client.on('error', (err) => {
+    console.error('REDIS client %o', err)
+  })
+  client.on('connect', () => {
+    console.debug('REDIS connection is up and running')
+  })
   const queue = new Bee('scraper', {
-    redis: client
+    redis: client,
+    removeOnSuccess: true
   })
   queue.process(concurrency, async (job) => {
     console.time(`SCRAPE_JOB: ${job.id}`)
@@ -31,6 +41,7 @@ module.exports = function () {
       console.error(error)
     }
   })
+  
 
   // queue.checkStalledJobs(60000, (err, numStalled) => {
   //   // prints the number of stalled jobs detected every 60000 ms

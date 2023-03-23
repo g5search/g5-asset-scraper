@@ -7,52 +7,33 @@ const topicName = process.env.PUBSUB_TOPIC
 const maxMessages = 3
 
 /**
- * Provides PubSub interface
- * @param {Object} queue Bee worker queue instance
- * @returns 
- */
-module.exports = function () {
-  return {
-    /**
-     * Initializes PubSub subscription and listens for messages
-     * @param {Object} queue 
-     */
-    subscribeWithFlowControl (queue) {
-      const subscriberOptions = {
-        flowControl: { maxMessages }
-      }
-      const subscription = pubsub.subscription(subscriptionNameOrId, subscriberOptions)
-      if (enableLogging) console.log(`******* Listening for messages on ${subscription.name}`)
-      const messageHandler = (message) => {
-        if (enableLogging) console.log(`******* Received message ${message.id}:`)
-        try {
-          let data
-          data = Buffer.from(message.data, 'base64').toString().trim()
-          data = JSON.parse(data)
-          queue.createJob(data).save()
-        } catch (error) {
-          console.error(`******* Error: ${error}`)
-        }
-        message.ack()
-      }
-      subscription.on('message', messageHandler)
-    },
-
-    /**
-     * Publishes result as message to PubSub topic
-     * @param {Object} message 
-     */
-    async publish (message) {
-      try {
-        if (!message) throw new Error({ message: 'No message provided' })
-        const dataBuffer = Buffer.from(JSON.stringify(message))
-        const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
-        if (enableLogging) console.log(`******* Message ${messageId} published.`)
-        return messageId
-      } catch (error) {
-        console.error(`******* Received error while publishing: ${error.message}`)
-        return error.message
-      }
-    }
+ * Publishes result as message to PubSub topic
+ * @param {Object} message 
+*/
+const publish = async (message) => {
+  try {
+    if (!message) throw new Error({ message: 'No message provided.' })
+    const dataBuffer = Buffer.from(JSON.stringify(message))
+    const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
+    if (enableLogging) console.info('Published message', { messageId })
+    return messageId
+  } catch (error) {
+    console.error('Publish error', error.message)
+    return error?.message
   }
 }
+
+/**
+ * Initializes PubSub subscription and listens for messages
+*/
+const subscribeWithFlowControl = async () => {
+  const subscriberOptions = {
+    flowControl: { maxMessages }
+  }
+  const subscription = pubsub.subscription(subscriptionNameOrId, subscriberOptions)
+  if (enableLogging) console.log(`******* Listening for messages on ${subscription.name}`)
+  // not sure return is necessary
+  return subscription
+}
+
+module.exports = { publish, subscribeWithFlowControl }

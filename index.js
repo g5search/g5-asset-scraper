@@ -3,17 +3,17 @@ const express = require('express')
 const app = express()
 app.use(express.json({ limit: '1000kb' }))
 const Scraper = require('./controllers/scraper')
-const queue = require('./controllers/queue')()
-const { subscribeWithFlowControl } = require('./controllers/pubsub')()
+const { queue, enqueue, messageHandler } = require('./controllers/queue')
+const { subscribeWithFlowControl } = require('./controllers/pubsub')
 
 app.post('/', async (req, res) => {
   const { body } = req
-  if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(body))
+  if (process.env.ENABLE_LOGGING) console.info(JSON.stringify(body))
   try {
     const scraper = new Scraper(body)
     await scraper.run()
     const results = scraper.results()
-    if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(results))
+    if (process.env.ENABLE_LOGGING) console.info(JSON.stringify(results))
     res.json(results)
   } catch (error) {
     console.log(error)
@@ -22,15 +22,15 @@ app.post('/', async (req, res) => {
 })
 
 app.post('/enqueue', async (req, res) => {
-  if (process.env.ENABLE_LOGGING) console.log(JSON.stringify(req.body))
-  await queue.createJob(req.body).save()
+  if (process.env.ENABLE_LOGGING) console.info(JSON.stringify(req.body))
+  await enqueue(req.body)
   res.status(204).send('Created')
 })
 
 const port = process.env.PORT || 8080
 
-app.listen(port, () => {
-  subscribeWithFlowControl(queue)
+app.listen(port, async () => {
+  const subscription = await subscribeWithFlowControl(queue)
+  subscription.on('message', messageHandler)
   console.log(`Listening on port :${port}`)
-  console.log(`Queue is ready: ${queue.name}: ${queue._isReady}`)
 })

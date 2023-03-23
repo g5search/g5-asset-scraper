@@ -6,8 +6,8 @@ const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1)
 
 const redisOptions = {
   url: process.env.REDIS_URL,
-  retry_strategy: function (options) {
-    return Math.min(options.attempt * 100, 3000)
+  socket: {
+    reconnectStrategy: (retries) => Math.min(retries * 100, 3000)
   }
 }
 
@@ -34,8 +34,9 @@ queue.process(concurrency, async (job, done) => {
     await scraper.run()
     const results = scraper.results()
     if (enableLogging) console.log(JSON.stringify(results))
-    await publish(results)
-    done(null, results)
+    // await publish(results)
+    return publish(results)
+    // done(null, results)
   } catch (error) {
     console.error(error)
     done(error)
@@ -43,9 +44,12 @@ queue.process(concurrency, async (job, done) => {
   console.timeEnd(`SCRAPE_JOB: ${job.id}`)
 })
 
-queue.checkStalledJobs(60000, (err, numStalled) => {
+queue.checkStalledJobs(120000, async (err, numStalled) => {
+  if (err) throw Error(err)
   if (enableLogging) console.log('Checked stalled jobs', numStalled)
   // remove stalled jobs and maybe send a failure notification
+  const health = await queue.checkHealth()
+  if (enableLogging) console.log('Queue health', health)
 })
 
 queue.on('ready', () => {

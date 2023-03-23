@@ -28,6 +28,16 @@ app.post('/enqueue', async (req, res) => {
 })
 
 const port = process.env.PORT || 8080
+const TIMEOUT = 30 * 1000;
+
+process.on('uncaughtException', async () => {
+  try {
+    await queue.close(TIMEOUT)
+  } catch (err) {
+    console.error('bee-queue failed to shut down gracefully', err)
+  }
+  process.exit(1)
+})
 
 app.listen(port, async () => {
   const subscription = await subscribeWithFlowControl(queue)

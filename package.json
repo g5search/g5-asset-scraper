@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tylrhas/g5-asset-scraper.git"
+    "url": "git+https://github.com/g5search/g5-asset-scraper.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tylrhas/g5-asset-scraper/issues"
+    "url": "https://github.com/g5search/g5-asset-scraper/issues"
   },
-  "homepage": "https://github.com/tylrhas/g5-asset-scraper#readme",
+  "homepage": "https://github.com/g5search/g5-asset-scraper#readme",
   "dependencies": {
     "@canvas/image": "^1.0.1",
     "@google-cloud/pubsub": "^3.2.0",

@@ -33,7 +33,7 @@ queue.process(concurrency, async (job, done) => {
     const scraper = new Scraper(data)
     await scraper.run()
     const results = scraper.results()
-    if (enableLogging) console.log(JSON.stringify(results))
+    if (enableLogging) console.info(JSON.stringify(results))
     return publish(results)
   } catch (error) {
     console.error(error)
@@ -44,9 +44,9 @@ queue.process(concurrency, async (job, done) => {
 
 queue.checkStalledJobs(120000, async (err, numStalled) => {
   if (err) throw Error(err)
-  if (enableLogging) console.log('Checked stalled jobs', numStalled)
+  if (enableLogging) console.info('Checked stalled jobs', numStalled)
   const health = await queue.checkHealth()
-  if (enableLogging) console.log('Queue health', health)
+  if (enableLogging) console.info('Queue health', health)
 })
 
 queue.on('ready', () => {

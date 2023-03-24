@@ -36,15 +36,13 @@ process.on('uncaughtException', async () => {
   } catch (err) {
     console.error('bee-queue failed to shut down gracefully', err)
   }
-  // process.exit(1)
-  console.info('Uncaught exception, gracefully closed queue.')
-  await queue.settings.redis.connect()
-  console.info(`Redis connection: ${queue.settings.redis.connected}`)
+  // queue and redis client don't have a method for attempting reconnection.
+  // Do not really understand why it's disconnecting after an hour or so.
+  process.exit(1)
 })
 
 app.listen(port, async () => {
   const subscription = await subscribeWithFlowControl(queue)
   subscription.on('message', messageHandler)
-  console.log({ redis: queue.settings.redis })
   console.log(`Listening on port :${port}`)
 })

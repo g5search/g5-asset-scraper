@@ -36,11 +36,15 @@ process.on('uncaughtException', async () => {
   } catch (err) {
     console.error('bee-queue failed to shut down gracefully', err)
   }
-  process.exit(1)
+  // process.exit(1)
+  console.info('Uncaught exception, gracefully closed queue.')
+  await queue.settings.redis.connect()
+  console.info(`Redis connection: ${queue.settings.redis.connected}`)
 })
 
 app.listen(port, async () => {
   const subscription = await subscribeWithFlowControl(queue)
   subscription.on('message', messageHandler)
+  console.log({ redis: queue.settings.redis })
   console.log(`Listening on port :${port}`)
 })

@@ -34,12 +34,12 @@ queue.process(concurrency, async (job, done) => {
     await scraper.run()
     const results = scraper.results()
     if (enableLogging) console.info(JSON.stringify(results))
+    console.timeEnd(`SCRAPE_JOB: ${job.id}`)
     return publish(results)
   } catch (error) {
-    console.error(error)
-    done(error)
+    console.timeEnd(`SCRAPE_JOB: ${job.id}`)
+    return console.error(error)
   }
-  console.timeEnd(`SCRAPE_JOB: ${job.id}`)
 })
 
 queue.checkStalledJobs(120000, async (err, numStalled) => {

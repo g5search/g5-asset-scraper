@@ -30,8 +30,16 @@ The post payload accepts a JSON body.
     "communityAmenities": []
   }
 }
+```
+
+To submit a job locally, here's an example:
 
 ```
+gcloud pubsub topics publish to-asset-scraper --message='{"vertical":"MF","rootdomain":"livexavier.com","rootProtocol":"http","locationId":9999,"pages":["https://livexavier.com/","https://livexavier.com/galleries"],"scrapers":{"photos":true,"amenities":true,"address":true,"emails":true,"phoneNumber":true,"social":true},"template":{"address":{"selector":null},"phone":{"selector":null},"email":{"selector":null},"social":{"selector":null},"amenities":{"selector":null,"slug":null}},"amenitiesConfig":{"community_amenities":[{"text":"Basketball Court","value":"basketballCourt","variants":["basketball"]},{"text":"Business Center","value":"businessCenter","variants":[]},{"text":"Carport Parking Available","value":"carportParking","variants":["carport"]},{"text":"Close to Dog Park","value":"closeToDogPark","variants":["near a dog park","by a dog park"]}],"apartment_amenities":[{"text":"Air Conditioning","value":"airConditioning","variants":["air conditioner","ac"]},{"text":"Cable Included","value":"cableIncluded","variants":[]}]},"config":{"photos":{"folder":"onboarder-temporary/__tests__/a0E3l00000MwvHTEST"}}}'
+```
+This will return a message id is published successfully.
+
+
 ## Pub Sub Worker
 
 Deployed as a private service, the API will not be accessible on the internet, so it uses pubsub to handle IO.

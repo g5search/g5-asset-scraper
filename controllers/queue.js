@@ -15,7 +15,9 @@ const client = redis.createClient(redisOptions)
 
 const queue = new Bee('scraper', {
   redis: client,
-  activateDelayedJobs: true
+  activateDelayedJobs: true,
+  getEvents: true,
+  sendEvents: true
 });
 
 queue.process(concurrency, async (job) => {
@@ -33,13 +35,6 @@ queue.process(concurrency, async (job) => {
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
     return error;
   }
-})
-
-queue.checkStalledJobs(120000, async (err, numStalled) => {
-  if (err) throw Error(err)
-  if (enableLogging) console.info('Checked stalled jobs', numStalled)
-  const health = await queue.checkHealth()
-  if (enableLogging) console.info('Queue health', health)
 })
 
 queue.on('ready', () => {
@@ -67,7 +62,7 @@ const enqueue = async (data) => {
                 .timeout(600000)                    
                 .retries(1)  
                 .save()
-  console.info('******* Enqueued job', { queue: await queue.checkHealth() })
+  console.info(`******* Enqueued job ${job.id}`);
   job.on('succeeded', result => publish(result));
   return job
 }

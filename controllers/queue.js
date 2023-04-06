@@ -13,19 +13,12 @@ const redisOptions = {
 
 const client = redis.createClient(redisOptions)
 
-client.on('end', () => {
-  console.debug('REDIS connection has been closed')
-})
-client.on('error', (err) => {
-  console.error('REDIS client %o', err)
-})
-client.on('connect', () => {
-  console.debug('REDIS connection is up and running')
-})
+const queue = new Bee('scraper', {
+  redis: client,
+  activateDelayedJobs: true
+});
 
-const queue = new Bee('scraper', { redis: client })
-
-queue.process(concurrency, async (job, done) => {
+queue.process(concurrency, async (job) => {
   console.time(`SCRAPE_JOB: ${job.id}`)
   const { data } = job
   const Scraper = require('./scraper')
@@ -35,10 +28,10 @@ queue.process(concurrency, async (job, done) => {
     const results = scraper.results()
     if (enableLogging) console.info(JSON.stringify(results))
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
-    return publish(results)
+    return results;
   } catch (error) {
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
-    return console.error(error)
+    return error;
   }
 })
 
@@ -68,9 +61,15 @@ const messageHandler = (message) => {
 
 const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
-  // queue is defined in another function. want to untangle that
-  const job = queue.createJob(data)
-  return job.timeout(600000).retries(1).save()
+  const job = await queue
+                .createJob(data)
+                .backoff('fixed', 1000)
+                .timeout(600000)                    
+                .retries(1)  
+                .save()
+  console.info('******* Enqueued job', { queue: await queue.checkHealth() })
+  job.on('succeeded', result => publish(result));
+  return job
 }
 
 module.exports = { queue, enqueue, messageHandler }

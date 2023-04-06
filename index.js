@@ -23,8 +23,9 @@ app.post('/', async (req, res) => {
 
 app.post('/enqueue', async (req, res) => {
   if (process.env.ENABLE_LOGGING) console.info(JSON.stringify(req.body))
-  await enqueue(req.body)
-  res.status(204).send('Created')
+  const job = await enqueue(req.body)
+  console.info(`Job ${job.id} enqueued.`);
+  res.status(204);
 })
 
 const port = process.env.PORT || 8080
@@ -38,7 +39,8 @@ process.on('uncaughtException', async () => {
   }
   // queue and redis client don't have a method for attempting reconnection.
   // Do not really understand why it's disconnecting after an hour or so.
-  process.exit(1)
+  queue.checkStalledJobs()
+  // process.exit(1)
 })
 
 app.listen(port, async () => {

@@ -29,19 +29,6 @@ app.post('/enqueue', async (req, res) => {
 })
 
 const port = process.env.PORT || 8080
-const TIMEOUT = 30 * 1000;
-
-process.on('uncaughtException', async () => {
-  try {
-    await queue.close(TIMEOUT)
-  } catch (err) {
-    console.error('bee-queue failed to shut down gracefully', err)
-  }
-  // queue and redis client don't have a method for attempting reconnection.
-  // Do not really understand why it's disconnecting after an hour or so.
-  queue.checkStalledJobs()
-  // process.exit(1)
-})
 
 app.listen(port, async () => {
   const subscription = await subscribeWithFlowControl(queue)

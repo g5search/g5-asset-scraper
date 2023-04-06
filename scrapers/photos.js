@@ -31,8 +31,8 @@ async function uploadPhotos (scraper) {
   const { results, errors } = await PromisePool
     .for(uploads)
     .process(async data => {
-      return console.log(data)
-      // return cloudinary.upload(data)
+      // return console.log(data)
+      return cloudinary.upload(data)
     })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results

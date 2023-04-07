@@ -37,7 +37,7 @@
     "cheerio": "^1.0.0-rc.5",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "parse-address": "^1.1.2"
   },
   "devDependencies": {

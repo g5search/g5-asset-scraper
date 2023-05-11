@@ -25,6 +25,7 @@ class Scraper {
     this.template = params.template
     this.complete = false
     this.amenitiesConfig = params.amenitiesConfig
+    this.locationId = params.locationId
     this.config = params.config
     this.amenitiesTags = 'p, li, span, option, form, button, input, header, .btn'
     this.errors = {}
@@ -128,6 +129,7 @@ class Scraper {
 
   results () {
     const result = {
+      locationId: this.locationId,
       errors: this.errors
     }
     this.returKeys.forEach(key => result[key] = this[key])
@@ -135,6 +137,7 @@ class Scraper {
   }
 
   validate (params) {
+    if (!params.locationId) throw new Error('locationId must be provided.')
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')

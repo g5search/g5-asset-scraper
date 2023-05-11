@@ -21,6 +21,7 @@ const queue = new Bee('scraper', {
 });
 
 queue.process(concurrency, async (job) => {
+  console.log({ job });
   console.time(`SCRAPE_JOB: ${job.id}`)
   const { data } = job
   const Scraper = require('./scraper')

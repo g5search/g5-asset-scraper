@@ -1,71 +1,67 @@
 const enableLogging = process.env.ENABLE_LOGGING === 'true'
-const Bee = require('bee-queue')
-const redis = require('redis')
+const faktory = require('faktory-worker')
 const { publish } = require('./pubsub')
 const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1)
+const PUBSUB_TOPIC = process.env.PUBSUB_TOPIC
 
-const redisOptions = {
-  url: process.env.REDIS_URL,
-  socket: {
-    reconnectStrategy: (retries) => Math.min(retries * 100, 3000)
+const faktoryOptions = {
+  timeout: 120,
+  url: process.env.FAKTORY_URL || 'tcp://localhost:7419',
+  concurrency
+}
+
+// logs job processing time
+faktory.use(async (ctx, next) => {
+  const start = process.hrtime();
+  await next();
+  const time = process.hrtime(start);
+  console.info("%s took %ds %dms", ctx.job.jobtype, time[0], time[1] / 1e6);
+})
+
+const scrapeHandler = async (data) => {
+  const Scraper = require('./scraper');
+  try {
+    const scraper = new Scraper(data);
+    await scraper.run();
+    const results = scraper.results();
+    if (enableLogging) console.info(JSON.stringify(results));
+    await publish(PUBSUB_TOPIC, results);
+    return results;
+  } catch (error) {
+    return error;
   }
 }
 
-const client = redis.createClient(redisOptions)
+faktory.register('scrape', scrapeHandler)
 
-const queue = new Bee('scraper', {
-  redis: client,
-  activateDelayedJobs: true,
-  getEvents: true,
-  sendEvents: true
-});
+const enqueue = async (data) => {
+  if (!faktory || !data) throw new Error({ message: 'No queue or data provided.' })
+  const client = await faktory.connect()
+  await client.job('scrape', data).push()
+  await client.close()
 
-queue.process(concurrency, async (job) => {
-  console.log({ job });
-  console.time(`SCRAPE_JOB: ${job.id}`)
-  const { data } = job
-  const Scraper = require('./scraper')
-  try {
-    const scraper = new Scraper(data)
-    await scraper.run()
-    const results = scraper.results()
-    if (enableLogging) console.info(JSON.stringify(results))
-    console.timeEnd(`SCRAPE_JOB: ${job.id}`)
-    return results;
-  } catch (error) {
-    console.timeEnd(`SCRAPE_JOB: ${job.id}`)
-    return error;
-  }
-})
+  // return client;
+}
 
-queue.on('ready', () => {
-  console.log('******* Queue is Ready!')
-})
-
-const messageHandler = (message) => {
+const messageHandler = async (message) => {
   if (enableLogging) console.log(`******* Received message ${message.id}:`)
   try {
     let data
     data = Buffer.from(message.data, 'base64').toString().trim()
     data = JSON.parse(data)
-    enqueue(data)
+    await enqueue(data)
+    message.ack()
+    console.info({ message});
   } catch (error) {
     console.error(`******* Error: ${error}`)
   }
-  message.ack()
+  message.ack();
+  console.info({ message});
 }
 
-const enqueue = async (data) => {
-  if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
-  const job = await queue
-                .createJob(data)
-                .backoff('fixed', 1000)
-                .timeout(600000)                    
-                .retries(1)  
-                .save()
-  console.info(`******* Enqueued job ${job.id}`);
-  job.on('succeeded', result => publish(result));
-  return job
-}
+faktory
+  .work(faktoryOptions)
+  // .then(res => publish(res))
+  .catch(error => console.error(error))
 
-module.exports = { queue, enqueue, messageHandler }
+module.exports = { faktory, enqueue, messageHandler }

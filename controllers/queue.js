@@ -1,26 +1,14 @@
-const enableLogging = process.env.ENABLE_LOGGING === 'true'
-const Bee = require('bee-queue')
-const redis = require('redis')
+const enableLogging = process.env.ENABLE_LOGGING === 'true';
+const {Queue, Worker} = require('bullmq');
 const { publish } = require('./pubsub')
 const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1)
+const connection = {
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+};
 
-const redisOptions = {
-  url: process.env.REDIS_URL,
-  socket: {
-    reconnectStrategy: (retries) => Math.min(retries * 100, 3000)
-  }
-}
+const queue = new Queue('scraper', { connection });
 
-const client = redis.createClient(redisOptions)
-
-const queue = new Bee('scraper', {
-  redis: client,
-  activateDelayedJobs: true,
-  getEvents: true,
-  sendEvents: true
-});
-
-queue.process(concurrency, async (job) => {
+const workerHandler = async (job) => {
   console.log({ job });
   console.time(`SCRAPE_JOB: ${job.id}`)
   const { data } = job
@@ -36,11 +24,7 @@ queue.process(concurrency, async (job) => {
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
     return error;
   }
-})
-
-queue.on('ready', () => {
-  console.log('******* Queue is Ready!')
-})
+};
 
 const messageHandler = (message) => {
   if (enableLogging) console.log(`******* Received message ${message.id}:`)
@@ -57,15 +41,12 @@ const messageHandler = (message) => {
 
 const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
-  const job = await queue
-                .createJob(data)
-                .backoff('fixed', 1000)
-                .timeout(600000)                    
-                .retries(1)  
-                .save()
+  const job = await queue.add('scrape', data);
   console.info(`******* Enqueued job ${job.id}`);
-  job.on('succeeded', result => publish(result));
+  // job.on('succeeded', result => publish(result));
   return job
 }
+
+const worker = new Worker('scraper', workerHandler, { connection, concurrency });
 
 module.exports = { queue, enqueue, messageHandler }

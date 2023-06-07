@@ -1,0 +1,24 @@
+version: "3"
+services:
+  asset-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - asset-network
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PUBSUB_TOPIC=asset-responses-unit
+      - PUBSUB_SUBSCRIPTION=asset-responses-unit
+      - PROJECT_ID=opex-staging-b877
+    ports:
+      - 8090:8085
+
+  redis:
+    image: redis:alpine
+    networks:
+      - asset-network
+    ports:
+      - 6379:6379

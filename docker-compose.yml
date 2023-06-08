@@ -14,12 +14,14 @@ services:
     depends_on:
       - redis
     environment:
-      - REDIS_URL=redis://redis:6379
-      - PUBSUB_TOPIC=asset-responses-unit
-      - PUBSUB_SUBSCRIPTION=asset-responses-unit
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PUBSUB_TOPIC=from-asset-scraper
+      - PUBSUB_SUBSCRIPTION=to-asset-scraper-sub
       - PROJECT_ID=opex-staging-b877
+      - JOB_TIMEOUT=600000
     ports:
-      - 8090:8085
+      - "8090:8085"
 
   redis:
     image: redis
@@ -27,4 +29,4 @@ services:
     networks:
       - asset-network
     ports:
-      - 6379:6379
+      - "6379:6379"

@@ -1,4 +1,9 @@
 version: "3"
+
+networks:
+  asset-network:
+    driver: bridge
+
 services:
   asset-scraper:
     build:
@@ -17,7 +22,8 @@ services:
       - 8090:8085
 
   redis:
-    image: redis:alpine
+    image: redis
+    restart: always
     networks:
       - asset-network
     ports:

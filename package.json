@@ -8,6 +8,7 @@
     "imageName": "asset-scraper"
   },
   "scripts": {
+    "start": "node ./index.js",
     "dev": "nodemon ./index.js",
     "deploy": "./upgrade.sh",
     "test": "jest"

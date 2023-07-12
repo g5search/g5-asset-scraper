@@ -8,15 +8,7 @@
     "imageName": "asset-scraper"
   },
   "scripts": {
-    "docker:build": "docker build -t $npm_package_config_imageName .",
-    "docker:run": "docker run -p 8085:8085 $npm_package_config_imageName",
-    "docker:tag:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$branch",
-    "docker:tag:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$branch",
-    "docker:tag:prod": " docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$npm_package_version",
-    "docker:push:prod": "docker push $npm_package_config_imageRepo:$npm_package_version",
-    "docker:push:staging": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
-    "docker:push:prime": "branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse $branch); docker push $npm_package_config_imageRepo:$branch",
-    "helm:upgrade:staging": "cd chart && branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD); sha=$(git rev-parse --short $branch); helm upgrade --install --namespace=default asset-scraper --values=asm-testing-staging-values.yaml --set=node-web-service.image.tag=$branch-$sha .",
+    "start": "node ./index.js",
     "dev": "nodemon ./index.js",
     "deploy": "./upgrade.sh",
     "test": "jest"
@@ -25,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/g5search/g5-asset-scraper.git"
   },
-  "author": "",
+  "author": "David Miller",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/g5search/g5-asset-scraper/issues"
@@ -36,8 +28,8 @@
     "@google-cloud/pubsub": "^3.2.0",
     "@supercharge/promise-pool": "^1.7.0",
     "axios": "^1.3.5",
-    "bee-queue": "^1.4.0",
     "blockhash-core": "^0.1.0",
+    "bullmq": "^3.15.2",
     "cheerio": "^1.0.0-rc.5",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",

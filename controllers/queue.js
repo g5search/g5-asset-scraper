@@ -1,27 +1,29 @@
-const enableLogging = process.env.ENABLE_LOGGING === 'true'
-const Bee = require('bee-queue')
-const redis = require('redis')
+const enableLogging = process.env.ENABLE_LOGGING === 'true';
+const {Queue, Worker} = require('bullmq');
 const { publish } = require('./pubsub')
-const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1)
+const concurrency = parseInt(process.env.MAX_CONCURRENT_JOBS || 1);
+const timeout = parseInt(process.env.JOB_TIMEOUT || 600000);
 
-const redisOptions = {
-  url: process.env.REDIS_URL,
-  socket: {
-    reconnectStrategy: (retries) => Math.min(retries * 100, 3000)
+const connection = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || 6379)
+};
+const defaultJobOptions = {
+  attempts: 3,
+  backoff: {
+    type: 'exponential',
+    delay: 1000,
   }
-}
+};
 
-const client = redis.createClient(redisOptions)
+const limiter = {
+  max: 10,
+  duration: 1000,
+};
 
-const queue = new Bee('scraper', {
-  redis: client,
-  activateDelayedJobs: true,
-  getEvents: true,
-  sendEvents: true
-});
+const queue = new Queue('scraper', { limiter, defaultJobOptions, connection });
 
-queue.process(concurrency, async (job) => {
-  console.log({ job });
+const onScrape = async (job) => {
   console.time(`SCRAPE_JOB: ${job.id}`)
   const { data } = job
   const Scraper = require('./scraper')
@@ -36,11 +38,7 @@ queue.process(concurrency, async (job) => {
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
     return error;
   }
-})
-
-queue.on('ready', () => {
-  console.log('******* Queue is Ready!')
-})
+};
 
 const messageHandler = (message) => {
   if (enableLogging) console.log(`******* Received message ${message.id}:`)
@@ -55,17 +53,39 @@ const messageHandler = (message) => {
   message.ack()
 }
 
+const withTimeout = (ms, jobFunction) => {
+  return function(...args) {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error('Job timed out'));
+      }, ms);
+        
+      Promise
+        .resolve(jobFunction(...args))
+        .then((result) => {
+          clearTimeout(timeoutId);
+          resolve(result);
+        })
+        .catch((error) => {
+          clearTimeout(timeoutId);
+          reject(error);
+        });
+    });
+  }
+};
+
+const workerHandler = withTimeout(timeout, onScrape);
+const worker = new Worker('scraper', workerHandler, { connection, concurrency });
+
 const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
-  const job = await queue
-                .createJob(data)
-                .backoff('fixed', 1000)
-                .timeout(600000)                    
-                .retries(1)  
-                .save()
+  const job = await queue.add('scrape', data);
   console.info(`******* Enqueued job ${job.id}`);
-  job.on('succeeded', result => publish(result));
-  return job
+  worker.on('completed', result => publish(result));
+  worker.on('drained', () => console.info('******* Worker drained.'));
+  worker.on('failed', (error) => console.error(`******* Worker failed: ${error}`));
+  return job;
 }
 
-module.exports = { queue, enqueue, messageHandler }
+
+module.exports = { queue, enqueue, messageHandler, worker }

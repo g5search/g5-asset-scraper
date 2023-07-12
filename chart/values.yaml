@@ -92,3 +92,8 @@ node-web-service:
         key: CLOUDINARY_TMP_PREFIX
   - name: PORT
     value : "8085"
+  - name: REDIS_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper-cache-a-redisinstance
+        key: host

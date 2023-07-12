@@ -1,6 +1,6 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
-const scrapers = require('./scrapers')
+const scrapers = require('../scrapers')
 
 /**
  * Scrapes websites for assets (address, imeages, amentiies, emails)
@@ -25,6 +25,7 @@ class Scraper {
     this.template = params.template
     this.complete = false
     this.amenitiesConfig = params.amenitiesConfig
+    this.locationId = params.locationId
     this.config = params.config
     this.amenitiesTags = 'p, li, span, option, form, button, input, header, .btn'
     this.errors = {}
@@ -55,19 +56,31 @@ class Scraper {
 
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
-      await this.beforeScrape[i](this)
+      try {
+        await this.beforeScrape[i](this)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
   async runAfterScrape () {
     for (let i = 0 ; i < this.afterScrape.length; i++) {
-      await this.afterScrape[i](this)
+      try {
+        await this.afterScrape[i](this)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
  async runBeforePageChange () {
     for (let i = 0 ; i < this.beforePageChange.length; i++) {
-      await this.beforePageChange[i](this)
+      try {
+        await this.beforePageChange[i](this)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
@@ -116,6 +129,7 @@ class Scraper {
 
   results () {
     const result = {
+      locationId: this.locationId,
       errors: this.errors
     }
     this.returKeys.forEach(key => result[key] = this[key])
@@ -123,11 +137,12 @@ class Scraper {
   }
 
   validate (params) {
-    if (!params.amenitiesConfig || typeof params.amenitiesConfig !== 'object') throw new Error ('missing amenities config')
+    if (!params.locationId) throw new Error('locationId must be provided.')
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
     if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
+    if (!params.amenitiesConfig || typeof params.amenitiesConfig !== 'object') throw new Error ('missing amenities config')
   }
 }
 

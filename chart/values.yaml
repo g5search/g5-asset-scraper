@@ -1,0 +1,99 @@
+global: 
+  applicationName: asset-scraper
+  region: us-central1
+node-web-service:
+  disableHealthChecking: true
+  database:
+    enabled: false
+  cache:
+    enabled: true
+    readReplicasMode: "READ_REPLICAS_DISABLED"
+  image:
+    name: gcr.io/g5-images/asset-scraper
+  isInternetFacing:  false
+  hasMetrics: false
+  replicaCount: 2
+  revisionHistoryLimit: 1
+  command: [ "node", "index.js" ]
+  resources:
+    requests:
+      memory: 2000Mi
+      cpu: 200m
+  topics:
+    asset-responses-2:
+      create: true
+    asset-results-2:
+      create: true
+  subscriptions:
+    asset-responses-2: {}
+  configurations:
+    production:
+      configMapData:
+        ENABLE_LOGGING: "false"
+        PUBSUB_TOPIC: "asset-requests-2"
+        PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
+        PROJECT_ID: "opex-staging-b877"
+    prime:
+      configMapData:
+        ENABLE_LOGGING: "true"
+        PUBSUB_TOPIC: "asset-results-2"
+        PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
+        PROJECT_ID: "opex-prime-25d3"
+    staging:
+      configMapData:
+        ENABLE_LOGGING: "true"
+        PUBSUB_TOPIC: "asset-results-2"
+        PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
+        PROJECT_ID: "opex-staging-b877"
+  env:
+  - name: NODE_TLS_REJECT_UNAUTHORIZED
+    value: "1"
+  - name: MAX_CONCURRENT_JOBS
+    value: "2"
+  - name: ENABLE_LOGGING
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: ENABLE_LOGGING
+  - name: PUBSUB_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PUBSUB_TOPIC
+  - name: PROJECT_ID
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PROJECT_ID
+  - name: PUBSUB_SUBSCRIPTION
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper
+        key: PUBSUB_SUBSCRIPTION
+  - name: CLOUDINARY_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_SECRET
+  - name: CLOUDINARY_KEY
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_KEY
+  - name: CLOUDINARY_NAME
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_NAME
+  - name: CLOUDINARY_TMP_PREFIX
+    valueFrom:
+      secretKeyRef:
+        name: asset-scraper
+        key: CLOUDINARY_TMP_PREFIX
+  - name: PORT
+    value : "8085"
+  - name: REDIS_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: asset-scraper-cache-a-redisinstance
+        key: host

@@ -1,0 +1,9 @@
+global: 
+  projectID: opex-prod-ebbd
+  isProduction: true
+  computeNetworkSelfLink: https://www.googleapis.com/compute/v1/projects/opex-prod-ebbd/global/networks/gke-cluster
+node-web-service:
+  configuration: production
+  environment: opex-prod
+  cache: 
+    instanceSuffix: a

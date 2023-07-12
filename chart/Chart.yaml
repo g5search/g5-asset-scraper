@@ -1,0 +1,8 @@
+apiVersion: v2
+description: A Helm chart for Kubernetes
+name: asset-scraper
+version: 1.0.0
+dependencies:
+  - name: node-web-service
+    version: "0.1.0"
+    repository: "@g5-multiverse-helm3-repositories"

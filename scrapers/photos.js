@@ -1,7 +1,7 @@
+const enableLogging = process.env.ENABLE_LOGGING === 'true'
 const PromisePool = require('@supercharge/promise-pool')
-const cloudinary = require('../cloudinary')
+const cloudinary = require('../controllers/cloudinary')
 const { getUniqueImageUrls } = require('../controllers/photos')
-// const concurrency = 10
 
 module.exports = {
   init,
@@ -19,8 +19,11 @@ function init (Scraper) {
 async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
     .map(url => formatImageUrl(url))
+  if (enableLogging) console.log({ msg: 'BEFORE IMAGE DEDUPE', count: imageUrls.length })
+
   const uniqueUrls = await getUniqueImageUrls(imageUrls)
-  if (process.env.ENABLE_LOGGING) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
+  if (enableLogging) console.log({ msg: 'BEFORE UPLOAD', uniqueUrls })
+
   const uploads = uniqueUrls.map((imageUrl) => {
     const tags = [...scraper.imageUrls[imageUrl], 'Previous_Site']
     return { url: imageUrl, attribs: { folder: scraper.config.photos.folder, tags } }
@@ -28,18 +31,16 @@ async function uploadPhotos (scraper) {
   const { results, errors } = await PromisePool
     .for(uploads)
     .process(async data => {
+      // return console.log(data)
       return cloudinary.upload(data)
     })
   scraper.errors = { ...scraper.errors, imageUpload: errors }
   return results
-  // return asyncPool(concurrency, uploads, tryCatchUpload)
 }
 
 function scrapePhotos (scraper) {
-  const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))
-  ]
-  if (process.env.ENABLE_LOGGING) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
+  const urls = scraper.page ? createFormattedImageSet(scraper) : []
+  if (enableLogging) console.log({ msg: 'FORMATTED IMAGE URLS FOUND', urls })
   const pageUrl = scraper.url
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {
@@ -47,6 +48,11 @@ function scrapePhotos (scraper) {
     }
     scraper.imageUrls[url].push(pageUrl)
   })
+}
+
+function createFormattedImageSet (scraper) {
+  return [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
+    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))]
 }
 
 function formatImageUrl (url, rootProtocol, rootdomain) {
@@ -69,4 +75,3 @@ function formatImageUrl (url, rootProtocol, rootdomain) {
   }
   return `${rootProtocol}://${rootdomain}/${cleanPath}`
 }
-

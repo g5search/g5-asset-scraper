@@ -1,8 +1,9 @@
 const cheerio = require('cheerio')
-const Scraper = require('../../scraper')
+const Scraper = require('../../controllers/scraper')
 const html = require('../config/html')
 const params = require('../config/params.json')
 const { init, getSocialLinks, socialMap, compareLinks } = require('../../scrapers/social')
+
 describe('Social Scraper' , () => {
   let scraper
   const htmlWithSocialLinks = `<div class="social-links">
@@ -28,7 +29,7 @@ describe('Social Scraper' , () => {
   })
 
   test('getSocialLinks with Selector and match', () => {
-    jest.spyOn('../../scrapers/social', 'compareLinks')
+    jest.spyOn(require('../../scrapers/social'), 'compareLinks')
     scraper.$ = cheerio.load(html)
     // init(scraper)
     // getSocialLinks(scraper)

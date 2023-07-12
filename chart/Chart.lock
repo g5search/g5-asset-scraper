@@ -1,0 +1,6 @@
+dependencies:
+- name: node-web-service
+  repository: gs://g5-multiverse-helm3-repositories
+  version: 0.1.0
+digest: sha256:d2bbcc91514df9f1ed09d700e223b0552b931943e633fff367726c2712ac8379
+generated: "2023-02-27T09:47:27.148461-08:00"

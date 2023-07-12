@@ -1,0 +1,61 @@
+# REQUIRED - Valid tag for node image to use as the basis for this
+# application's Docker image. See https://hub.docker.com/r/library/node/tags/
+BaseImageTag: "14.21.2"
+
+CIPlan: "g5search/ci-plan-node:v1.1.4"
+
+# Whether you want Yarn-related commands or not. It used to be hot and now it's
+# not, I guess? It might be in the garbage jump of "old" Javascript tools like
+# Bower. Defaults to false. 
+DisableYarn: true
+
+# Upgrades/downgrades yarn to a specific version. If not set, any yarn commands
+# in the build steps will use the latest version of yarn.
+# YarnVersion: "0.28.4"
+
+# Any valid Dockerfile commands, which will be inserted directly before
+# project-specific dependencies are installed. Note the use of the `|-`
+# to denote that it is a multiline string.
+PreDependency: |-
+  FROM node:14
+  WORKDIR /usr/src/app
+  COPY package*.json ./
+  RUN npm install --only=production
+  COPY . ./
+
+# Replaces the default command for installing dependencies (via npm). Can be
+# any one-line command that will run successfully in the build container.
+DependencyOverride: "npm install"
+
+# Default to false. Setting to true disables installing bower and bower-related
+# dependencies.
+DisableBower: true
+
+# A list of additional environment variables that should be present in the test
+# container. Some variables are already set automatically and this will not
+# override them.
+#TestEnvironment:
+#  - A_VAR=${{A_CODEFRESH_VARIABLE}}
+#  - OTHER_VAR=something
+
+# Replaces the default command for running tests. Can be any one-line command
+# that will run successfully in the test container.
+TestOverride: "echo 'testMe'"
+
+# Default to false. Setting to true will enable the debug flag on CodeClimate
+# submission.
+# CodeClimateDebug: true
+
+# Default to false. Setting to true will cause the latest version of PhantomJS
+# to be installed.
+# EnablePhantomJS: true
+
+# Default to false. Installs a boatload of dependencies for headless chrome,
+# which will undoubtedly break within 3 to 6 months, as is the way.
+# EnableChome: true
+
+# This is used by Codefresh to determine which Docker image registry to use.
+# It's set to g5-images by default, which is the name of our GCR registry.
+# Registries are configured in Codefresh account settings.
+#ImageRegistry: cfcr
+

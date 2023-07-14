@@ -29,10 +29,10 @@ node-web-service:
   configurations:
     production:
       configMapData:
-        ENABLE_LOGGING: "false"
-        PUBSUB_TOPIC: "asset-requests-2"
+        ENABLE_LOGGING: "true"
+        PUBSUB_TOPIC: "asset-results-2"
         PUBSUB_SUBSCRIPTION: "asset-responses-2-asset-scraper"
-        PROJECT_ID: "opex-staging-b877"
+        PROJECT_ID: "opex-prod-ebbd"
     prime:
       configMapData:
         ENABLE_LOGGING: "true"

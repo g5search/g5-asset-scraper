@@ -14,6 +14,7 @@ const publish = async (message) => {
   try {
     if (!message) throw new Error({ message: 'No message provided.' })
     const dataBuffer = Buffer.from(JSON.stringify(message))
+    console.log({ message: JSON.stringify(message) })
     const messageId = await pubsub.topic(topicName).publishMessage({ data: dataBuffer })
     console.info(`Publishing message to ${topicName}`);
     if (enableLogging) console.info('Published message', { messageId })

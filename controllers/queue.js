@@ -33,8 +33,10 @@ const onScrape = async (job) => {
     const results = scraper.results()
     if (enableLogging) console.info(JSON.stringify(results))
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
+    await publish(results);
     return results;
   } catch (error) {
+    await publish(error);
     console.timeEnd(`SCRAPE_JOB: ${job.id}`)
     return error;
   }
@@ -81,7 +83,7 @@ const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
   const job = await queue.add('scrape', data);
   console.info(`******* Enqueued job ${job.id}`);
-  worker.on('completed', result => publish(result));
+  // worker.on('completed', result => publish(result));
   worker.on('drained', () => console.info('******* Worker drained.'));
   worker.on('failed', (error) => console.error(`******* Worker failed: ${error}`));
   return job;

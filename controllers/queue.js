@@ -75,7 +75,7 @@ const withTimeout = (ms, jobFunction) => {
 };
 
 const workerHandler = withTimeout(timeout, onScrape);
-const worker = new Worker('scraper', workerHandler, { connection, concurrency });
+const worker = new Worker('scraper', onScrape, { connection, concurrency });
 
 const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })

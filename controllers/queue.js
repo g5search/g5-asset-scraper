@@ -53,35 +53,38 @@ const messageHandler = (message) => {
   message.ack()
 }
 
-const withTimeout = (ms, jobFunction) => {
-  return function(...args) {
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        reject(new Error('Job timed out'));
-      }, ms);
+// const withTimeout = (ms, jobFunction) => {
+//   return function(...args) {
+//     return new Promise((resolve, reject) => {
+//       const timeoutId = setTimeout(() => {
+//         reject(new Error('Job timed out'));
+//       }, ms);
         
-      Promise
-        .resolve(jobFunction(...args))
-        .then((result) => {
-          clearTimeout(timeoutId);
-          resolve(result);
-        })
-        .catch((error) => {
-          clearTimeout(timeoutId);
-          reject(error);
-        });
-    });
-  }
-};
+//       Promise
+//         .resolve(jobFunction(...args))
+//         .then((result) => {
+//           clearTimeout(timeoutId);
+//           resolve(result);
+//         })
+//         .catch((error) => {
+//           clearTimeout(timeoutId);
+//           reject(error);
+//         });
+//     });
+//   }
+// };
 
-const workerHandler = withTimeout(timeout, onScrape);
-const worker = new Worker('scraper', workerHandler, { connection, concurrency });
+// const workerHandler = withTimeout(timeout, onScrape);
+const worker = new Worker('scraper', onScrape, { connection, concurrency });
 
 const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
   const job = await queue.add('scrape', data);
   console.info(`******* Enqueued job ${job.id}`);
-  worker.on('completed', result => publish(result));
+  worker.on('completed', (result) => {
+    console.info({ result });
+    publish(result);
+  });
   worker.on('drained', () => console.info('******* Worker drained.'));
   worker.on('failed', (error) => console.error(`******* Worker failed: ${error}`));
   return job;

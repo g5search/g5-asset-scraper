@@ -83,7 +83,6 @@ const enqueue = async (data) => {
   if (!queue || !data) throw new Error({ message: 'No queue or data provided.' })
   const job = await queue.add('scrape', data);
   console.info(`******* Enqueued job ${job.id}`);
-  // worker.on('completed', result => publish(result));
   worker.on('drained', () => console.info('******* Worker drained.'));
   worker.on('failed', (error) => console.error(`******* Worker failed: ${error}`));
   return job;

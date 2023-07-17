@@ -8,6 +8,7 @@ node-web-service:
   cache:
     enabled: true
     readReplicasMode: "READ_REPLICAS_DISABLED"
+    maxmemoryPolicy: "noeviction"
   image:
     name: gcr.io/g5-images/asset-scraper
   isInternetFacing:  false
@@ -97,3 +98,5 @@ node-web-service:
       configMapKeyRef:
         name: asset-scraper-cache-a-redisinstance
         key: host
+  - name: JOB_TIMEOUT
+    value: "600000"
